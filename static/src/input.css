@@ -1,0 +1,135 @@
+@import url("https://fonts.googleapis.com/css2?family=Jersey+25&family=Micro+5&family=Pixelify+Sans:wght@400..700&display=swap");
+
+@import "tailwindcss";
+
+@theme {
+  --color-accent-red: #ff6b6b;
+  --color-accent-red-dark: #c94c4c;
+  --color-accent-green: #6bcb77;
+  --color-accent-blue: #4d96ff;
+  --color-bg-light: #fffbea;
+  --color-bg-dark: #ced4da;
+  --color-bg-shadow: #adb5bd;
+
+  --color-bg-dark-mode: #1e1e2e;
+
+  --font-pixelify: "Pixelify Sans", sans-serif;
+  --font-micro5: "Micro 5", sans-serif;
+  --font-jersey25: "Jersey 25", sans-serif;
+}
+
+/* Nav Buttons */
+.nav-button {
+  @apply font-jersey25 
+    text-accent-red 
+    text-[20px]
+
+    flex
+    justify-center
+    items-center
+
+    h-full
+    p-1
+    rounded-md
+
+    sm:rounded-none
+    sm:px-4
+    sm:py-0.5
+
+    hover:bg-accent-red
+    hover:text-bg-light
+    active:bg-accent-red-dark
+    transition
+    duration-150
+    cursor-pointer
+}
+
+.nav-button span {
+  @apply ms-2
+    hidden
+    sm:block
+    select-none
+}
+.nav-button:hover svg {
+  @apply fill-bg-light;
+}
+.nav-button svg {
+  @apply fill-accent-red
+    
+    transition
+    duration-150
+    ease-in;
+}
+
+/* Menu Button */
+/* .menu-button {
+  @apply sm:hidden
+    px-1
+    rounded-sm
+    
+    hover:bg-accent-red
+    transition
+    duration-150
+    ease-in;
+}
+.menu-button svg {
+  @apply fill-accent-red
+    transition
+    duration-150
+    ease-in;
+}
+.menu-button:hover svg {
+  @apply fill-bg-light;
+} */
+
+/* Timer Button */
+.timer-button {
+  @apply bg-accent-red-dark rounded-md p-0 cursor-pointer;
+}
+.timer-button span {
+  @apply block
+    px-3
+    sm:px-6
+    py-1
+
+    rounded-md
+    font-jersey25
+    bg-accent-red
+    text-bg-light
+    -translate-y-1
+
+    select-none
+
+    transition-transform
+}
+.timer-button:active span {
+  @apply translate-none
+}
+.active-button span {
+  @apply translate-none bg-accent-red-dark cursor-not-allowed
+}
+
+/* START BUTTON */
+
+#start-button {
+  @apply
+    bg-accent-red-dark    /* Darker background: acts as "shadow" */
+    cursor-pointer
+}
+#start-button span {
+  @apply
+    relative           
+    bg-accent-red        
+    font-pixelify
+    text-2xl
+    text-bg-light
+    px-10
+    py-2.5
+    sm:px-12
+    -translate-y-1.5    
+    inline-block
+    transition-transform;
+}
+#start-button:active span {
+  @apply translate-none
+}

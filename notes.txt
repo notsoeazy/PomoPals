@@ -1,0 +1,8 @@
+# When Starting:
+    source venv/bin/activate - enter virtual environment
+    deactivate - leave virtual environment
+
+# To run:
+    # Automatically rebuilds when you change files (like HTML templates)
+    npx @tailwindcss/cli -i ./static/src/input.css -o ./static/dist/output.css --watch
+    flask run
