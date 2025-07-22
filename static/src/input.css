@@ -88,7 +88,7 @@
 }
 .timer-button span {
   @apply block
-    px-3
+    px-2.5
     sm:px-6
     py-1
 
@@ -123,9 +123,9 @@
     font-pixelify
     text-2xl
     text-bg-light
-    px-10
     py-2.5
-    sm:px-12
+    min-w-36
+    sm:min-w-46
     -translate-y-1.5    
     inline-block
     transition-transform;

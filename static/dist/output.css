@@ -443,7 +443,7 @@
   translate: var(--tw-translate-x) var(--tw-translate-y);
   border-radius: var(--radius-md);
   background-color: var(--color-accent-red);
-  padding-inline: calc(var(--spacing) * 3);
+  padding-inline: calc(var(--spacing) * 2.5);
   padding-block: calc(var(--spacing) * 1);
   font-family: var(--font-jersey25);
   color: var(--color-bg-light);
@@ -471,10 +471,10 @@
 #start-button span {
   position: relative;
   display: inline-block;
+  min-width: calc(var(--spacing) * 36);
   --tw-translate-y: calc(var(--spacing) * -1.5);
   translate: var(--tw-translate-x) var(--tw-translate-y);
   background-color: var(--color-accent-red);
-  padding-inline: calc(var(--spacing) * 10);
   padding-block: calc(var(--spacing) * 2.5);
   font-family: var(--font-pixelify);
   font-size: var(--text-2xl);
@@ -484,7 +484,7 @@
   transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
   transition-duration: var(--tw-duration, var(--default-transition-duration));
   @media (width >= 40rem) {
-    padding-inline: calc(var(--spacing) * 12);
+    min-width: calc(var(--spacing) * 46);
   }
 }
 #start-button:active span {
