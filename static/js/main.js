@@ -29,14 +29,18 @@ function resetTimer() {
     isPaused = true;
     clearInterval(timer);
     timer = null;
+    startButtonText.innerText = 'Start';
     remainingTime = configuredTime;
     displayTime.innerText = calculateTime(configuredTime);
 }
 
+// Run default
+resetTimer();
+
 // Button onclick
 startButton.addEventListener('click', function () {
     // Change button text
-    startButtonText.innerText = startButtonText.innerText === "Start" ? "Pause" : "Start";
+    startButtonText.innerText = startButtonText.innerText === 'Start' ? 'Pause' : 'Start';
 
     // Start the timer
     if (isPaused) {
@@ -61,3 +65,36 @@ startButton.addEventListener('click', function () {
     }
 });
 
+// Timer buttons
+const timerButtons = document.querySelectorAll('.timer-button');
+let timerButtonActive = 'Pomodoro';
+
+timerButtons.forEach(function (button) {
+    button.addEventListener('click', function () {   
+        // Remobe active-button class and disabled state of the others
+        timerButtons.forEach((btn) => {
+            btn.classList.remove('active-button');
+            btn.removeAttribute('disabled');
+        });  
+        
+        // Add active class  
+        button.classList.add('active-button');
+        // Add disabled attribute
+        button.setAttribute('disabled', true);
+        
+        // Get the button text
+        buttonText = button.textContent.trim();
+        
+        if (buttonText === 'Pomodoro') {
+            configuredTime = pomodoroTime;
+        } 
+        else if (buttonText === 'Short Break') {
+            configuredTime = shortBreakTime;
+        } 
+        else if (buttonText === 'Long Break') {
+            configuredTime = longBreakTime;
+        }
+
+        resetTimer();
+    });
+});

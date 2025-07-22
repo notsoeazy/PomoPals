@@ -44,16 +44,16 @@
     cursor-pointer
 }
 
-.nav-button span {
+.nav-button > span {
   @apply ms-2
     hidden
     sm:block
     select-none
 }
-.nav-button:hover svg {
+.nav-button:hover > svg {
   @apply fill-bg-light;
 }
-.nav-button svg {
+.nav-button > svg {
   @apply fill-accent-red
     
     transition
@@ -86,7 +86,7 @@
 .timer-button {
   @apply bg-accent-red-dark rounded-md p-0 cursor-pointer;
 }
-.timer-button span {
+.timer-button > span {
   @apply block
     px-2.5
     sm:px-6
@@ -102,34 +102,10 @@
 
     transition-transform
 }
-.timer-button:active span {
+.timer-button:active > span {
   @apply translate-none
 }
-.active-button span {
-  @apply translate-none bg-accent-red-dark cursor-not-allowed
+.active-button > span {
+  @apply translate-none bg-accent-red-dark cursor-default
 }
 
-/* START BUTTON */
-
-#start-button {
-  @apply
-    bg-accent-red-dark    /* Darker background: acts as "shadow" */
-    cursor-pointer
-}
-#start-button span {
-  @apply
-    relative           
-    bg-accent-red        
-    font-pixelify
-    text-2xl
-    text-bg-light
-    py-2.5
-    min-w-36
-    sm:min-w-46
-    -translate-y-1.5    
-    inline-block
-    transition-transform;
-}
-#start-button:active span {
-  @apply translate-none
-}
