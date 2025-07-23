@@ -22,7 +22,7 @@
 <body class="bg-bg-light flex flex-col items-center">
 
   <!-- Navbar -->
-  <div class="w-full sm:bg-amber-100 md:bg-amber-200 lg:bg-amber-300">
+  <div class="w-full bg-amber-100">
     <nav class="w-full max-w-[900px] mx-auto flex items-center py-2 bg-amber-100">
       <!-- Icon and Logo -->
       <div class="flex items-center flex-1 ms-2 mr-auto">
@@ -73,19 +73,19 @@
     </nav>
   </div>
 
-  <main class="w-full max-w-[900px] mx-auto flex flex-col items-center p-5 mt-5">
+  <main class="w-full sm:w-fit sm:max-w-9/10 md:max-w-fit max-w-[900px] mx-auto py-5 px-5 sm:px-20 sm:py-10 md:px-25 mt-5 flex flex-col items-center relative bg-[#d9d9d9] rounded-none sm:rounded-2xl">
 
-      <div class="max-w-full border-8 border-accent-green flex flex-col justify-center items-center py-5 px-5 sm:px-10 md:px-20">
+      <div class="max-w-full border-8 border-accent-green bg-bg-light flex flex-col justify-center items-center py-5 px-5 sm:px-10 md:px-20 z-10">
         <div class="min-w-[280px] sm:min-w-[390px]">
           <!-- TIMER SELECTION -->
-          <div class="flex gap-2">
+          <div class="flex gap-2 justify-center">
             <button class="timer-button active-button" disabled><span>Pomodoro</span></button>
             <button class="timer-button"><span>Short Break</span></button>
             <button class="timer-button"><span>Long Break</span></button>
           </div>
           <!-- TIMER -->
-          <div>
-            <span id="timer" class="font-micro5 text-[10rem] xs:text-[12rem] sm:text-[14rem] text-accent-red leading-none pl-4 select-none">00:00</span>
+          <div class="text-center">
+            <span id="timer" class="font-micro5 text-[8rem] sm:text-[14rem] text-accent-red leading-none pl-4 select-none">00:00</span>
           </div>
           <div class="flex gap-4 w-full justify-center">
             <div class="relative">
@@ -96,7 +96,7 @@
                 </span>
               </button>
               <!-- SKIP BUTTON -->
-              <button id="skip-button" disabled class="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 -right-20 sm:-right-24 opacity-0 transition-opacity duration-200 ease-in">
+              <button id="skip-button" disabled class="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 -right-20 sm:-right-24 opacity-0 transition-opacity delay-300 duration-200 ease-linear">
                 <svg class="fill-accent-red-dark" width="40px" height="40px" viewBox="0 0 24 24" fill="FFFFFF" xmlns="http://www.w3.org/2000/svg">
                   <path d="M22.75 5C22.75 4.58579 22.4142 4.25 22 4.25C21.5858 4.25 21.25 4.58579 21.25 5V19C21.25 19.4142 21.5858 19.75 22 19.75C22.4142 19.75 22.75 19.4142 22.75 19V5Z"/>
                   <path d="M16.6598 14.6474C18.4467 13.4935 18.4467 10.5065 16.6598 9.35258L5.87083 2.38548C4.13419 1.26402 2 2.72368 2 5.0329V18.9671C2 21.2763 4.13419 22.736 5.87083 21.6145L16.6598 14.6474Z"/>
@@ -111,12 +111,14 @@
         </div>
       </div>
 
-      <div>
-        <span id="pomodoro-count">#1</span>
+      <!-- To be improved -->
+      <div class="bg-[#d9d9d9] hidden absolute top-28 w-full max-w-9/10 min-h-[360px] z-0 rounded-xl"></div>
+
+      <div class="mt-5 font-jersey25 text-xl z-10">
+        <span id="pomodoro-count"></span>
       </div>
 
-
-
+    
   </main>
 
 

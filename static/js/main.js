@@ -13,7 +13,7 @@ let remainingTime = configuredTime
 let timer = null
 let isPaused = true
 let timerButtonActive = "Pomodoro"
-let sessionMessage = "Time to Focus"
+let sessionMessage = null
 let pomodoroCount = 0
 let sessionCount = 1
 
@@ -34,21 +34,20 @@ function calculateTime(timeInSeconds) {
 
 // Reset Timer
 function resetTimer() {
-    timeElapsed = 0;
     isPaused = true;
     clearInterval(timer);
     timer = null;
     startButtonText.innerText = "Start";
     remainingTime = configuredTime;
     displayTime.innerText = calculateTime(configuredTime);
-    displayPomodoroCount.innerText = `#${sessionCount} - ${sessionMessage}`;
     toggleSkipButton();
+    updateSessionMessage();
 }
 
 // Run default
 resetTimer()
 
-// Button onclick
+// TIMER
 startButton.addEventListener("click", function () {
     // Change button text
     startButtonText.innerText =
@@ -83,37 +82,31 @@ startButton.addEventListener("click", function () {
 // Timer buttons on click events
 timerButtons.forEach(function (button) {
     button.addEventListener("click", function () {
-        // MAYBE TURN THIS INTO FUNCTION: setActiveButton(button-name)
-        // Remobe active-button class and disabled state of the others
+        // Reset buttons
         timerButtons.forEach((btn) => {
             btn.classList.remove("active-button")
             btn.removeAttribute("disabled")
         })
-
-        // Add active class
+        // Set active button
         button.classList.add("active-button")
-        // Add disabled attribute
         button.setAttribute("disabled", true)
 
         // Get the button text
         buttonText = button.textContent.trim();
         timerButtonActive = buttonText;
 
+        // Change the configured time
         if (buttonText === "Pomodoro") {
             configuredTime = pomodoroTime;
-            sessionMessage = "Time to Focus!";
         } else if (buttonText === "Short Break") {
             configuredTime = shortBreakTime
-            sessionMessage = "Time for a break!";
         } else if (buttonText === "Long Break") {
             configuredTime = longBreakTime
-            sessionMessage = "Take a long break!";
         }
 
         resetTimer()
     })
 })
-
 
 // Timer end logic
 function handleTimerEnd() {
@@ -157,6 +150,7 @@ function handleTimerEnd() {
 // Skip button onclick
 skipButton.addEventListener("click", function () {
     handleTimerEnd();
+    updateSessionMessage();
 })
 
 // Show or hide skip button
@@ -172,4 +166,15 @@ function toggleSkipButton() {
         skipButton.classList.add("cursor-pointer");
         skipButton.removeAttribute("disabled");
     }
+}
+
+function updateSessionMessage() {
+    if (timerButtonActive === "Pomodoro") {
+        sessionMessage = "Time to Focus!"
+    } else if (timerButtonActive === "Short Break") {
+        sessionMessage = "Take a break!";
+    } else if (timerButtonActive === "Long Break") {
+        sessionMessage = "Take a long break!"
+    }
+    displayPomodoroCount.innerText = `#${sessionCount} - ${sessionMessage}`
 }
