@@ -41,14 +41,14 @@
     active:bg-accent-red-dark
     transition
     duration-150
-    cursor-pointer
+    cursor-pointer;
 }
 
 .nav-button > span {
   @apply ms-2
     hidden
     sm:block
-    select-none
+    select-none;
 }
 .nav-button:hover > svg {
   @apply fill-bg-light;
@@ -87,7 +87,11 @@
   @apply bg-accent-red-dark rounded-md p-0 cursor-pointer;
 }
 .timer-button > span {
-  @apply block
+  @apply 
+    text-sm
+    sm:text-base
+  
+    block
     px-2.5
     sm:px-6
     py-1
@@ -100,12 +104,11 @@
 
     select-none
 
-    transition-transform
+    transition-transform;
 }
 .timer-button:active > span {
-  @apply translate-none
+  @apply translate-none;
 }
 .active-button > span {
-  @apply translate-none bg-accent-red-dark cursor-default
+  @apply translate-none bg-accent-red-dark cursor-default;
 }
-

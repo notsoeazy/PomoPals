@@ -1,26 +1,35 @@
+// TODO: Fix bug - when pressing timer buttons the message doesnt change
+
+
 // Preset time
-let pomodoroTime = 25 * 60;
-let shortBreakTime = 5 * 60;
-let longBreakTime = 15 * 60;
+let pomodoroTime = 25 * 60
+let shortBreakTime = 5 * 60
+let longBreakTime = 15 * 60
 
 // Start with pomodoro for now
-let configuredTime = pomodoroTime;
+let configuredTime = pomodoroTime
 
-// let timeElapsed = 0;
-let remainingTime = configuredTime;
-let timer = null;
-let isPaused = true;
+let remainingTime = configuredTime
+let timer = null
+let isPaused = true
+let timerButtonActive = "Pomodoro"
+let sessionMessage = "Time to Focus"
+let pomodoroCount = 0
+let sessionCount = 1
 
-const displayTime = document.getElementById('timer');
-const startButton = document.getElementById('start-button');
-const startButtonText = startButton.querySelector('span');
+const displayTime = document.getElementById("timer");
+const startButton = document.getElementById("start-button");
+const startButtonText = startButton.querySelector("span");
+const timerButtons = document.querySelectorAll(".timer-button");
+const skipButton = document.getElementById("skip-button");
+const displayPomodoroCount = document.getElementById("pomodoro-count");
 
 // Calculate Time - Returns time in MM:SS format
 function calculateTime(timeInSeconds) {
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = timeInSeconds % 60;
-    
-    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    const minutes = Math.floor(timeInSeconds / 60)
+    const seconds = timeInSeconds % 60
+
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2,"0")}`
 }
 
 // Reset Timer
@@ -29,72 +38,138 @@ function resetTimer() {
     isPaused = true;
     clearInterval(timer);
     timer = null;
-    startButtonText.innerText = 'Start';
+    startButtonText.innerText = "Start";
     remainingTime = configuredTime;
     displayTime.innerText = calculateTime(configuredTime);
+    displayPomodoroCount.innerText = `#${sessionCount} - ${sessionMessage}`;
+    toggleSkipButton();
 }
 
 // Run default
-resetTimer();
+resetTimer()
 
 // Button onclick
-startButton.addEventListener('click', function () {
+startButton.addEventListener("click", function () {
     // Change button text
-    startButtonText.innerText = startButtonText.innerText === 'Start' ? 'Pause' : 'Start';
+    startButtonText.innerText =
+        startButtonText.innerText === "Start" ? "Pause" : "Start";
+
+    toggleSkipButton();
 
     // Start the timer
     if (isPaused) {
         timer = setInterval(function () {
+            // Timer ends
             if (remainingTime <= 0) {
-                clearInterval(timer);
-                interval = null;
-                alert('Timer ends!');
-                return;
+                clearInterval(timer)
+                interval = null
+                handleTimerEnd()
+            } else {
+                remainingTime--
+                displayTime.innerText = calculateTime(remainingTime)
             }
-            remainingTime--;
-            displayTime.innerText = calculateTime(remainingTime);
-        }, 1000);
-    
-        isPaused = false;
+        }, 1000)
+
+        isPaused = false
     }
     // Pause the timer
     else {
-        clearInterval(timer);
-        timer = null;
-        isPaused = true;
+        clearInterval(timer)
+        timer = null
+        isPaused = true
     }
-});
+})
 
-// Timer buttons
-const timerButtons = document.querySelectorAll('.timer-button');
-let timerButtonActive = 'Pomodoro';
-
+// Timer buttons on click events
 timerButtons.forEach(function (button) {
-    button.addEventListener('click', function () {   
+    button.addEventListener("click", function () {
+        // MAYBE TURN THIS INTO FUNCTION: setActiveButton(button-name)
         // Remobe active-button class and disabled state of the others
         timerButtons.forEach((btn) => {
-            btn.classList.remove('active-button');
-            btn.removeAttribute('disabled');
-        });  
-        
-        // Add active class  
-        button.classList.add('active-button');
+            btn.classList.remove("active-button")
+            btn.removeAttribute("disabled")
+        })
+
+        // Add active class
+        button.classList.add("active-button")
         // Add disabled attribute
-        button.setAttribute('disabled', true);
-        
+        button.setAttribute("disabled", true)
+
         // Get the button text
         buttonText = button.textContent.trim();
-        
-        if (buttonText === 'Pomodoro') {
+        timerButtonActive = buttonText;
+
+        if (buttonText === "Pomodoro") {
             configuredTime = pomodoroTime;
-        } 
-        else if (buttonText === 'Short Break') {
-            configuredTime = shortBreakTime;
-        } 
-        else if (buttonText === 'Long Break') {
-            configuredTime = longBreakTime;
+            sessionMessage = "Time to Focus!";
+        } else if (buttonText === "Short Break") {
+            configuredTime = shortBreakTime
+            sessionMessage = "Time for a break!";
+        } else if (buttonText === "Long Break") {
+            configuredTime = longBreakTime
+            sessionMessage = "Take a long break!";
         }
 
-        resetTimer();
-    });
-});
+        resetTimer()
+    })
+})
+
+
+// Timer end logic
+function handleTimerEnd() {
+    // Check after timer ends if pomodoro
+    if (timerButtonActive === "Pomodoro") {
+        pomodoroCount++
+        // Take long break
+        if (pomodoroCount % 4 === 0) {
+            configuredTime = longBreakTime
+            timerButtonActive = "Long Break"
+            alert("Good job! Time for a long break.")
+        }
+        // Take short break
+        else {
+            configuredTime = shortBreakTime;
+            timerButtonActive = "Short Break";
+            alert("Good job! Time for a short break.");
+        }
+    }
+    // After the breaks, reset to pomodoro time
+    else {
+        configuredTime = pomodoroTime;
+        timerButtonActive = "Pomodoro";
+        alert("Break over! Time to focus.");
+        // Only increment session if pomodoro timer is used
+        if (pomodoroCount >= sessionCount)
+            sessionCount++;
+    }
+    resetTimer()
+    // Update buttons and UI
+    timerButtons.forEach((btn) => {
+        btn.classList.remove("active-button");
+        btn.removeAttribute("disabled")
+        if (btn.textContent.trim() === timerButtonActive) {
+            btn.classList.add("active-button");
+            btn.setAttribute("disabled", true);
+        }
+    })
+}
+
+// Skip button onclick
+skipButton.addEventListener("click", function () {
+    handleTimerEnd();
+})
+
+// Show or hide skip button
+function toggleSkipButton() {
+    if (startButtonText.innerText === "Start") {
+        skipButton.classList.remove("opacity-100");
+        skipButton.classList.add("opacity-0");
+        skipButton.classList.remove("cursor-pointer");
+        skipButton.setAttribute("disabled", true);
+    } else {
+        skipButton.classList.remove("opacity-0");
+        skipButton.classList.add("opacity-100");
+        skipButton.classList.add("cursor-pointer");
+        skipButton.removeAttribute("disabled");
+    }
+}
