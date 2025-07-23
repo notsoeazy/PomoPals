@@ -112,3 +112,15 @@
 .active-button > span {
   @apply translate-none bg-accent-red-dark cursor-default;
 }
+
+/* CLose button for modals */
+.modal-close {
+  @apply
+  absolute
+  right-0
+  rounded-md
+  hover:bg-bg-dark
+  p-1
+  box-content
+  cursor-pointer
+}

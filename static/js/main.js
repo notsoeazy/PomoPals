@@ -178,3 +178,21 @@ function updateSessionMessage() {
     }
     displayPomodoroCount.innerText = `#${sessionCount} - ${sessionMessage}`
 }
+
+
+// Modal logic
+
+const settingsButton = document.getElementById('settings-button');
+const settingsModal = document.getElementById('settings-modal');
+
+// Show modal when setting icon is clicked
+settingsButton.addEventListener('click', function() {
+    settingsModal.classList.remove('hidden');
+    settingsModal.classList.add('flex');
+});
+
+// Close modal when close icon is clicked
+settingsModal.querySelector('.modal-close').addEventListener('click', function () {
+    settingsModal.classList.add('hidden');
+    settingsModal.classList.remove('flex');
+});

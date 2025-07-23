@@ -6,3 +6,20 @@
     # Automatically rebuilds when you change files (like HTML templates)
     npx @tailwindcss/cli -i ./static/src/input.css -o ./static/dist/output.css --watch
     flask run
+
+TODO:
+
+    1. add prgress bar
+        add a div make its width full or what ever the size.
+        inside make a line center it.
+        add an element inside that has w-0 and adjust .style.width in percent + "%"
+        make the height full
+
+    2. Make the stats modal predesign.
+    3. Make the settings modal functional.
+    4. Connect the settings to the timer.
+
+
+    For future:
+        Add database.
+        Store the stats in database.
