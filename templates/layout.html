@@ -115,6 +115,13 @@
         <span id="pomodoro-count"></span>
       </div>
 
+      <!-- Progress bar -->
+      <div class="w-full max-w-[330px] sm:max-w-[450px] min-h-10 text-center mt-3">
+        <div class="w-full bg-gray-400 flex items-center rounded-full">
+          <div id="progress-bar" class="bg-accent-blue w-0 min-h-1 rounded-full"></div>
+        </div>
+      </div>
+
       
       
     </main>
@@ -135,21 +142,21 @@
         <!-- TIMER -->
         <div class="font-jersey25">
 
-          <span>TIMER</span>
+          <!-- <span>TIMER</span> -->
 
-          <label class="block">Time (minutes)</label>
+          <h2 class="block">Time (minutes)</h2>
           <form class="flex gap-8 justify-evenly">
             <div class="flex flex-col flex-1">
               <label for="pomodoro">Pomodoro</label>
-              <input id="pomodoro" class="bg-bg-dark rounded-sm p-1.5 w-24 self-center" type="number" min="1" step="1" value="25" name="pomodoro">
+              <input id="pomodoro" class="bg-bg-dark rounded-sm p-1.5 w-full" type="number" min="1" step="1" value="25" name="pomodoro">
             </div>
             <div class="flex flex-col flex-1">
               <label for="short-break">Short Break</label>
-              <input id="short-break" class="bg-bg-dark rounded-sm p-1.5 w-24 self-center" type="number" min="1" step="1" value="5" name="short-break">
+              <input id="short-break" class="bg-bg-dark rounded-sm p-1.5 w-full" type="number" min="1" step="1" value="5" name="short-break">
             </div>
             <div class="flex flex-col flex-1">
               <label for="long-break">Long Break</label>
-              <input id="long-break" class="bg-bg-dark rounded-sm p-1.5 w-24 self-center" type="number" min="1" step="1" value="15" name="long-break">
+              <input id="long-break" class="bg-bg-dark rounded-sm p-1.5 w-full" type="number" min="1" step="1" value="15" name="long-break">
             </div>
           </form>
           

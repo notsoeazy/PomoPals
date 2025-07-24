@@ -26,10 +26,10 @@ const displayPomodoroCount = document.getElementById("pomodoro-count");
 
 // Calculate Time - Returns time in MM:SS format
 function calculateTime(timeInSeconds) {
-    const minutes = Math.floor(timeInSeconds / 60)
-    const seconds = timeInSeconds % 60
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
 
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2,"0")}`
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2,"0")}`;
 }
 
 // Reset Timer
@@ -67,6 +67,7 @@ startButton.addEventListener("click", function () {
                 remainingTime--
                 displayTime.innerText = calculateTime(remainingTime)
             }
+            updateProgressBar();
         }, 1000)
 
         isPaused = false
@@ -196,3 +197,10 @@ settingsModal.querySelector('.modal-close').addEventListener('click', function (
     settingsModal.classList.add('hidden');
     settingsModal.classList.remove('flex');
 });
+
+// Update the progress bar
+function updateProgressBar() {
+    progressBar = document.getElementById('progress-bar');
+    percent = (remainingTime / configuredTime) * 100;
+    progressBar.style.width = (100 - percent) + "%";
+}

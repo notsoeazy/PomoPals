@@ -22,4 +22,4 @@ TODO:
 
     For future:
         Add database.
-        Store the stats in database.
+        Store the stats in database.k
