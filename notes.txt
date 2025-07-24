@@ -9,7 +9,7 @@
 
 TODO:
 
-    1. add prgress bar
+    DONE - 1. add prgress bar
         add a div make its width full or what ever the size.
         inside make a line center it.
         add an element inside that has w-0 and adjust .style.width in percent + "%"

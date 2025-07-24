@@ -3,25 +3,87 @@
 @import "tailwindcss";
 
 @theme {
-  --color-accent-red: #ff6b6b;
-  --color-accent-red-dark: #c94c4c;
-  --color-accent-green: #6bcb77;
-  --color-accent-blue: #4d96ff;
-  --color-bg-light: #fffbea;
-  --color-bg-dark: #ced4da;
-  --color-bg-shadow: #adb5bd;
+    /* --color-accent-red: #ff6b6b;
+    --color-accent-red-dark: #c94c4c;
+    --color-accent-green: #6bcb77;
+    --color-accent-blue: #4d96ff;
+    --color-bg-light: #fffbea;
+    --color-bg-dark: #ced4da;
+    --color-bg-shadow: #adb5bd; */
 
-  --color-bg-dark-mode: #1e1e2e;
+    --color-bg-dark-mode: #1e1e2e;
 
-  --font-pixelify: "Pixelify Sans", sans-serif;
-  --font-micro5: "Micro 5", sans-serif;
-  --font-jersey25: "Jersey 25", sans-serif;
+    /* New Colors */
+    --color-text-50: hsl(45, 46%, 95%);
+    --color-text-100: hsl(44, 45%, 90%);
+    --color-text-200: hsl(46, 45%, 80%);
+    --color-text-300: hsl(45, 46%, 70%);
+    --color-text-400: hsl(45, 46%, 60%);
+    --color-text-500: hsl(45, 46%, 50%);
+    --color-text-600: hsl(45, 46%, 40%);
+    --color-text-700: hsl(45, 46%, 30%);
+    --color-text-800: hsl(46, 45%, 20%);
+    --color-text-900: hsl(44, 45%, 10%);
+    --color-text-950: hsl(45, 46%, 5%);
+
+    --color-background-50: hsl(51, 100%, 95%);
+    --color-background-100: hsl(51, 100%, 90%);
+    --color-background-200: hsl(51, 100%, 80%);
+    --color-background-300: hsl(51, 100%, 70%);
+    --color-background-400: hsl(51, 100%, 60%);
+    --color-background-500: hsl(51, 100%, 50%);
+    --color-background-600: hsl(51, 100%, 40%);
+    --color-background-700: hsl(51, 100%, 30%);
+    --color-background-800: hsl(51, 100%, 20%);
+    --color-background-900: hsl(51, 100%, 10%);
+    --color-background-950: hsl(51, 100%, 5%);
+
+    --color-primary-50: hsl(130, 46%, 95%);
+    --color-primary-100: hsl(130, 49%, 90%);
+    --color-primary-200: hsl(127, 47%, 80%);
+    --color-primary-300: hsl(128, 48%, 70%);
+    --color-primary-400: hsl(128, 48%, 60%);
+    --color-primary-500: hsl(128, 48%, 50%);
+    --color-primary-600: hsl(128, 48%, 40%);
+    --color-primary-700: hsl(128, 48%, 30%);
+    --color-primary-800: hsl(128, 47%, 20%);
+    --color-primary-900: hsl(130, 49%, 10%);
+    --color-primary-950: hsl(125, 46%, 5%);
+
+    --color-secondary-50: hsl(215, 100%, 95%);
+    --color-secondary-100: hsl(215, 100%, 90%);
+    --color-secondary-200: hsl(215, 100%, 80%);
+    --color-secondary-300: hsl(215, 100%, 70%);
+    --color-secondary-400: hsl(215, 100%, 60%);
+    --color-secondary-500: hsl(215, 100%, 50%);
+    --color-secondary-600: hsl(215, 100%, 40%);
+    --color-secondary-700: hsl(215, 100%, 30%);
+    --color-secondary-800: hsl(215, 100%, 20%);
+    --color-secondary-900: hsl(215, 100%, 10%);
+    --color-secondary-950: hsl(215, 100%, 5%);
+
+    --color-accent-50: hsl(0, 100%, 95%);
+    --color-accent-100: hsl(0, 100%, 90%);
+    --color-accent-200: hsl(0, 100%, 80%);
+    --color-accent-300: hsl(0, 100%, 70%);
+    --color-accent-400: hsl(0, 100%, 60%);
+    --color-accent-500: hsl(0, 100%, 50%);
+    --color-accent-600: hsl(0, 100%, 40%);
+    --color-accent-700: hsl(0, 100%, 30%);
+    --color-accent-800: hsl(0, 100%, 20%);
+    --color-accent-900: hsl(0, 100%, 10%);
+    --color-accent-950: hsl(0, 100%, 5%);
+
+    /* Fonts */
+    --font-pixelify: "Pixelify Sans", sans-serif;
+    --font-micro5: "Micro 5", sans-serif;
+    --font-jersey25: "Jersey 25", sans-serif;
 }
 
 /* Nav Buttons */
 .nav-button {
-  @apply font-jersey25 
-    text-accent-red 
+    @apply font-jersey25 
+    text-accent-300 
     text-[20px]
 
     flex
@@ -36,59 +98,37 @@
     sm:px-4
     sm:py-0.5
 
-    hover:bg-accent-red
-    hover:text-bg-light
-    active:bg-accent-red-dark
+    hover:bg-accent-300
+    hover:text-background-50
+    active:bg-accent-600
     transition
     duration-150
     cursor-pointer;
 }
 
 .nav-button > span {
-  @apply ms-2
+    @apply ms-2
     hidden
     sm:block
     select-none;
 }
 .nav-button:hover > svg {
-  @apply fill-bg-light;
+    @apply fill-background-50;
 }
 .nav-button > svg {
-  @apply fill-accent-red
+    @apply fill-accent-300
     
     transition
     duration-150
     ease-in;
 }
-
-/* Menu Button */
-/* .menu-button {
-  @apply sm:hidden
-    px-1
-    rounded-sm
-    
-    hover:bg-accent-red
-    transition
-    duration-150
-    ease-in;
-}
-.menu-button svg {
-  @apply fill-accent-red
-    transition
-    duration-150
-    ease-in;
-}
-.menu-button:hover svg {
-  @apply fill-bg-light;
-} */
 
 /* Timer Button */
 .timer-button {
-  @apply bg-accent-red-dark rounded-md p-0 cursor-pointer;
+    @apply bg-accent-700 rounded-md p-0 cursor-pointer;
 }
 .timer-button > span {
-  @apply 
-    text-sm
+    @apply text-sm
     sm:text-base
   
     block
@@ -98,8 +138,8 @@
 
     rounded-md
     font-jersey25
-    bg-accent-red
-    text-bg-light
+    bg-accent-300
+    text-background-50
     -translate-y-1
 
     select-none
@@ -107,20 +147,53 @@
     transition-transform;
 }
 .timer-button:active > span {
-  @apply translate-none;
+    @apply translate-none;
 }
 .active-button > span {
-  @apply translate-none bg-accent-red-dark cursor-default;
+    @apply translate-none bg-accent-700 cursor-default;
 }
 
 /* CLose button for modals */
 .modal-close {
-  @apply
-  absolute
+    @apply absolute
   right-0
   rounded-md
-  hover:bg-bg-dark
+  hover:bg-accent-300
   p-1
   box-content
+  transition-all
+  duration-150
+  ease-in
+  cursor-pointer;
+}
+
+/* Toggle switch */
+
+.toggle-switch {
+  @apply
+  rounded-full
+  w-17
+  h-9
+  bg-gray-300
+  relative
   cursor-pointer
+
+  peer-checked:bg-secondary-300
+  transition-colors 
+  ease-linear 
+  duration-150
+
+  after:bg-white
+  after:w-8
+  after:h-8
+  after:rounded-full
+  after:content-['']
+  after:absolute
+  after:top-0.5
+  after:left-0.5
+
+  peer-checked:after:translate-x-8
+  after:transition-all 
+  after:duration-150 
+  after:ease-linear
 }

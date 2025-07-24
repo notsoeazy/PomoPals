@@ -1,15 +1,16 @@
-// TODO: Fix bug - when pressing timer buttons the message doesnt change
-
-
 // Preset time
 let pomodoroTime = 25 * 60
 let shortBreakTime = 5 * 60
 let longBreakTime = 15 * 60
+let longBreakInterval = 4
 
-// Start with pomodoro for now
-let configuredTime = pomodoroTime
+// TODO: Refactor the whole file to not pollute global scope
+const PomodoroApp = {
 
-let remainingTime = configuredTime
+}
+
+let configuredTime = null
+let remainingTime = null
 let timer = null
 let isPaused = true
 let timerButtonActive = "Pomodoro"
@@ -23,11 +24,26 @@ const startButtonText = startButton.querySelector("span");
 const timerButtons = document.querySelectorAll(".timer-button");
 const skipButton = document.getElementById("skip-button");
 const displayPomodoroCount = document.getElementById("pomodoro-count");
+const settingsForm = document.getElementById("timer-settings")
+const settingsButton = document.getElementById("settings-button")
+const settingsModal = document.getElementById("settings-modal")
+
+
+
+
+// Initiation
+function main() {
+    // Get the preset time
+    setTimerPresets()
+
+    // Reset the timer
+    resetTimer()
+}
 
 // Calculate Time - Returns time in MM:SS format
 function calculateTime(timeInSeconds) {
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = timeInSeconds % 60;
+    minutes = Math.floor(timeInSeconds / 60);
+    seconds = timeInSeconds % 60;
 
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2,"0")}`;
 }
@@ -38,14 +54,22 @@ function resetTimer() {
     clearInterval(timer);
     timer = null;
     startButtonText.innerText = "Start";
+    setTimerPresets()
+
+    // Change configured time
+    if (timerButtonActive === 'Pomodoro')
+        configuredTime = pomodoroTime
+    else if (timerButtonActive === 'Short Break')
+        configuredTime = shortBreakTime
+    else if (timerButtonActive === 'Long Break')
+        configuredTime = longBreakTime
+        
     remainingTime = configuredTime;
-    displayTime.innerText = calculateTime(configuredTime);
+    displayTime.innerText = calculateTime(remainingTime);
+    updateProgressBar();
     toggleSkipButton();
     updateSessionMessage();
 }
-
-// Run default
-resetTimer()
 
 // TIMER
 startButton.addEventListener("click", function () {
@@ -61,7 +85,7 @@ startButton.addEventListener("click", function () {
             // Timer ends
             if (remainingTime <= 0) {
                 clearInterval(timer)
-                interval = null
+                timer = null
                 handleTimerEnd()
             } else {
                 remainingTime--
@@ -96,15 +120,6 @@ timerButtons.forEach(function (button) {
         buttonText = button.textContent.trim();
         timerButtonActive = buttonText;
 
-        // Change the configured time
-        if (buttonText === "Pomodoro") {
-            configuredTime = pomodoroTime;
-        } else if (buttonText === "Short Break") {
-            configuredTime = shortBreakTime
-        } else if (buttonText === "Long Break") {
-            configuredTime = longBreakTime
-        }
-
         resetTimer()
     })
 })
@@ -115,7 +130,7 @@ function handleTimerEnd() {
     if (timerButtonActive === "Pomodoro") {
         pomodoroCount++
         // Take long break
-        if (pomodoroCount % 4 === 0) {
+        if (pomodoroCount % longBreakInterval === 0) {
             configuredTime = longBreakTime
             timerButtonActive = "Long Break"
             alert("Good job! Time for a long break.")
@@ -180,11 +195,18 @@ function updateSessionMessage() {
     displayPomodoroCount.innerText = `#${sessionCount} - ${sessionMessage}`
 }
 
+// Update the progress bar
+function updateProgressBar() {
+    progressBar = document.getElementById('progress-bar');
+    percent = (remainingTime / configuredTime) * 100;
+    progressBar.style.width = (100 - percent) + "%";
+}
 
 // Modal logic
-
-const settingsButton = document.getElementById('settings-button');
-const settingsModal = document.getElementById('settings-modal');
+function closeSettings() {
+    settingsModal.classList.remove('flex');
+    settingsModal.classList.add('hidden');
+}
 
 // Show modal when setting icon is clicked
 settingsButton.addEventListener('click', function() {
@@ -193,14 +215,26 @@ settingsButton.addEventListener('click', function() {
 });
 
 // Close modal when close icon is clicked
-settingsModal.querySelector('.modal-close').addEventListener('click', function () {
-    settingsModal.classList.add('hidden');
-    settingsModal.classList.remove('flex');
+settingsModal.querySelector('.modal-close').addEventListener('click', closeSettings);
+
+
+function setTimerPresets() {
+    pomodoroTime = settingsForm.querySelector('#pomodoro').value * 60;
+    shortBreakTime = settingsForm.querySelector('#short-break').value * 60;
+    longBreakTime = settingsForm.querySelector('#long-break').value * 60;
+    longBreakInterval = settingsForm.querySelector('#long-break-interval').value;
+}
+
+// Save settings
+document.getElementById('save-settings-button').addEventListener('click', function () {
+    setTimerPresets()
+    resetTimer()
+    closeSettings()
 });
 
-// Update the progress bar
-function updateProgressBar() {
-    progressBar = document.getElementById('progress-bar');
-    percent = (remainingTime / configuredTime) * 100;
-    progressBar.style.width = (100 - percent) + "%";
-}
+// Store settings in local storage
+
+
+
+
+document.addEventListener('DOMContentLoaded', main());
