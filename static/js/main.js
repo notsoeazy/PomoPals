@@ -5,6 +5,7 @@ const PomodoroApp = {
     shortBreakTime: 5 * 60,
     longBreakTime: 15 * 60,
     longBreakInterval: 4,
+    soundEffects: true,
 
     configuredTime: null,
     remainingTime: null,
@@ -36,7 +37,8 @@ const PomodoroApp = {
 
     // === Initialization ===
     init: function () {
-        this.setTimerPresets();
+        this.loadSettingsFromStorage();
+        this.setSettings();
         this.resetTimer();
         this.bindEvents();
 
@@ -47,7 +49,7 @@ const PomodoroApp = {
     bindEvents: function () {
         // Start Button Click
         this.startButton.addEventListener("click", () => {
-            this.buttonSound.play();
+            this.playButtonSound();
             this.toggleTimer();
         });
         
@@ -62,7 +64,7 @@ const PomodoroApp = {
         this.timerButtons.forEach(btn => {
             btn.addEventListener("click", () => {
                 this.changeTimerMode(btn);
-                this.buttonSound.play();
+                this.playButtonSound();
             });
         });
 
@@ -74,11 +76,12 @@ const PomodoroApp = {
         // Close settings Click
         this.settingsModal.querySelector(".modal-close").addEventListener("click", () => {
             this.closeSettings();
+            this.settingsForm.reset();
         });
         
         // Save settings Click
         this.saveSettingsButton.addEventListener("click", () => {
-            this.saveSettings();
+            this.updateSettings();
         });
 
         // Stats button Click
@@ -164,7 +167,7 @@ const PomodoroApp = {
     },
 
     handleTimerEnd: function () {
-        this.alarmSound.play();
+        this.startAlarm();
 
         if (this.timerButtonActive === "Pomodoro") {
             this.pomodoroCount++;
@@ -228,25 +231,72 @@ const PomodoroApp = {
         this.settingsModal.classList.remove("hidden");
         this.settingsModal.classList.add("flex");
     },
-
-    // To be replaced by loadSettingsFromStorage()
-    setTimerPresets: function () {
-        this.pomodoroTime = parseInt(this.settingsForm.querySelector("#pomodoro").value * 60);
-        this.shortBreakTime = parseInt(this.settingsForm.querySelector("#short-break").value * 60);
-        this.longBreakTime = parseInt(this.settingsForm.querySelector("#long-break").value * 60);
-        this.longBreakInterval = parseInt(this.settingsForm.querySelector("#long-break-interval").value);
-    },
-    // To be replaced by saveSettingsToStorage()
-    saveSettings: function () {
-        this.setTimerPresets();
+    
+    updateSettings: function () {
+        this.saveSettingsToStorage();
+        this.loadSettingsFromStorage();
+        this.setSettings();
         this.resetTimer();
         this.closeSettings();
     },
 
-    // To be used in the future when alert modal is implemented
-    // startAlarm: function () {
-    //     this.alarmSound.play();
-    // },
+    // Set the setting values
+    setSettings: function () {
+        this.pomodoroTime = parseInt(this.settingsForm.querySelector("#pomodoro").value) * 60 || (25 * 60);
+        this.shortBreakTime = parseInt(this.settingsForm.querySelector("#short-break").value) * 60 || (5 * 60);
+        this.longBreakTime = parseInt(this.settingsForm.querySelector("#long-break").value) * 60 || (15 * 60);
+        this.longBreakInterval = parseInt(this.settingsForm.querySelector("#long-break-interval").value);
+        this.soundEffects = this.settingsForm.querySelector("#sound-effects").checked;
+    },
+
+    // Get the values from the form and store in the storage
+    saveSettingsToStorage: function () {
+        localStorage.setItem(
+            "pomopals-settings",
+            JSON.stringify({
+                version: 1,
+                pomodoro: this.settingsForm.querySelector("#pomodoro").value,
+                shortBreak: this.settingsForm.querySelector("#short-break").value,
+                longBreak: this.settingsForm.querySelector("#long-break").value,
+                longBreakInterval: this.settingsForm.querySelector("#long-break-interval").value,
+                soundEffects: this.settingsForm.querySelector("#sound-effects").checked
+            })
+        )
+    },
+
+    // Get the settings from the localstorage
+    loadSettingsFromStorage: function () {
+        const saved = localStorage.getItem("pomopals-settings");
+        if (saved) {
+            const { pomodoro, shortBreak, longBreak, longBreakInterval, soundEffects } = JSON.parse(saved);
+            // Update the displayed values
+            this.settingsForm.querySelector("#pomodoro").value = pomodoro;
+            this.settingsForm.querySelector("#short-break").value = shortBreak;
+            this.settingsForm.querySelector("#long-break").value = longBreak;
+            this.settingsForm.querySelector("#long-break-interval").value = longBreakInterval;
+            this.settingsForm.querySelector("#sound-effects").checked = soundEffects;
+        }
+    },
+    
+    resetSettings: function () {
+        this.settingsForm.querySelector("#pomodoro").value = 25;
+        this.settingsForm.querySelector("#short-break").value = 5;
+        this.settingsForm.querySelector("#long-break").value = 15;
+        this.settingsForm.querySelector("#long-break-interval").value = 4;
+        this.settingsForm.querySelector("#sound-effects").checked = true;
+        this.setSettings();
+    },
+
+
+    // To be used/improved in the future when alert modal is implemented
+    startAlarm: function () {
+        if (this.soundEffects)
+            this.alarmSound.play();
+    },
+    playButtonSound: function () {
+          if (this.soundEffects)
+            this.buttonSound.play();
+    },
     // stopAlarm: function () {
     //     this.alarmSound.pause();
     //     this.alarmSound.currentTime = 0;
