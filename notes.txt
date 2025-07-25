@@ -9,17 +9,11 @@
 
 TODO:
 
-    DONE - 1. add prgress bar
-        add a div make its width full or what ever the size.
-        inside make a line center it.
-        add an element inside that has w-0 and adjust .style.width in percent + "%"
-        make the height full
-
-    2. Make the stats modal predesign.
-    3. Make the settings modal functional.
-    4. Connect the settings to the timer.
+    1. saveSettingsToStorage()
+    2. loadSettingsFromStorage()
 
 
     For future:
         Add database.
-        Store the stats in database.k
+        Store the stats in database.
+        Add timer end modal. - make alarm sound loop or after a certain time.

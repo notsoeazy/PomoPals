@@ -3,16 +3,6 @@
 @import "tailwindcss";
 
 @theme {
-    /* --color-accent-red: #ff6b6b;
-    --color-accent-red-dark: #c94c4c;
-    --color-accent-green: #6bcb77;
-    --color-accent-blue: #4d96ff;
-    --color-bg-light: #fffbea;
-    --color-bg-dark: #ced4da;
-    --color-bg-shadow: #adb5bd; */
-
-    --color-bg-dark-mode: #1e1e2e;
-
     /* New Colors */
     --color-text-50: hsl(45, 46%, 95%);
     --color-text-100: hsl(44, 45%, 90%);
@@ -168,7 +158,6 @@
 }
 
 /* Toggle switch */
-
 .toggle-switch {
   @apply
   rounded-full

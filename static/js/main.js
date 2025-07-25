@@ -1,240 +1,257 @@
-// Preset time
-let pomodoroTime = 25 * 60
-let shortBreakTime = 5 * 60
-let longBreakTime = 15 * 60
-let longBreakInterval = 4
-
 // TODO: Refactor the whole file to not pollute global scope
 const PomodoroApp = {
+    // === State ===
+    pomodoroTime: 25 * 60,
+    shortBreakTime: 5 * 60,
+    longBreakTime: 15 * 60,
+    longBreakInterval: 4,
 
-}
+    configuredTime: null,
+    remainingTime: null,
+    timer: null,
+    isPaused: true,
+    timerButtonActive: "Pomodoro",
+    sessionMessage: null,
+    pomodoroCount: 0,
+    sessionCount: 1,
 
-let configuredTime = null
-let remainingTime = null
-let timer = null
-let isPaused = true
-let timerButtonActive = "Pomodoro"
-let sessionMessage = null
-let pomodoroCount = 0
-let sessionCount = 1
+    // === DOM ===
+    displayTime: document.getElementById("timer"),
+    startButton: document.getElementById("start-button"),
+    startButtonText: document.getElementById("start-button").querySelector("span"),
+    timerButtons: document.querySelectorAll(".timer-button"),
+    skipButton: document.getElementById("skip-button"),
+    displayPomodoroCount: document.getElementById("pomodoro-count"),
+    settingsModal: document.getElementById("settings-modal"),
+    settingsForm: document.getElementById("timer-settings"),
+    settingsButton: document.getElementById("settings-button"),
+    statsButton: document.getElementById("stats-button"),
+    profileButton: document.getElementById("profile-button"),
+    saveSettingsButton: document.getElementById("save-settings-button"),
+    progressBar: document.getElementById("progress-bar"),
 
-const displayTime = document.getElementById("timer");
-const startButton = document.getElementById("start-button");
-const startButtonText = startButton.querySelector("span");
-const timerButtons = document.querySelectorAll(".timer-button");
-const skipButton = document.getElementById("skip-button");
-const displayPomodoroCount = document.getElementById("pomodoro-count");
-const settingsForm = document.getElementById("timer-settings")
-const settingsButton = document.getElementById("settings-button")
-const settingsModal = document.getElementById("settings-modal")
+    // === Sound ===
+    buttonSound: new Audio("/static/sounds/button.mp3"),
+    alarmSound: new Audio("/static/sounds/alarm.mp3"),
 
+    // === Initialization ===
+    init: function () {
+        this.setTimerPresets();
+        this.resetTimer();
+        this.bindEvents();
 
+        // this.alarmSound.load = true;
+    },
 
-
-// Initiation
-function main() {
-    // Get the preset time
-    setTimerPresets()
-
-    // Reset the timer
-    resetTimer()
-}
-
-// Calculate Time - Returns time in MM:SS format
-function calculateTime(timeInSeconds) {
-    minutes = Math.floor(timeInSeconds / 60);
-    seconds = timeInSeconds % 60;
-
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2,"0")}`;
-}
-
-// Reset Timer
-function resetTimer() {
-    isPaused = true;
-    clearInterval(timer);
-    timer = null;
-    startButtonText.innerText = "Start";
-    setTimerPresets()
-
-    // Change configured time
-    if (timerButtonActive === 'Pomodoro')
-        configuredTime = pomodoroTime
-    else if (timerButtonActive === 'Short Break')
-        configuredTime = shortBreakTime
-    else if (timerButtonActive === 'Long Break')
-        configuredTime = longBreakTime
+    // === Events ===
+    bindEvents: function () {
+        // Start Button Click
+        this.startButton.addEventListener("click", () => {
+            this.buttonSound.play();
+            this.toggleTimer();
+        });
         
-    remainingTime = configuredTime;
-    displayTime.innerText = calculateTime(remainingTime);
-    updateProgressBar();
-    toggleSkipButton();
-    updateSessionMessage();
-}
+        // Skip Button Click
+        this.skipButton.addEventListener("click", () => {
+            this.buttonSound.play();
+            this.handleTimerEnd();
+            this.updateSessionMessage();
+        });
 
-// TIMER
-startButton.addEventListener("click", function () {
-    // Change button text
-    startButtonText.innerText =
-        startButtonText.innerText === "Start" ? "Pause" : "Start";
+        // Timer buttons Click
+        this.timerButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                this.changeTimerMode(btn);
+                this.buttonSound.play();
+            });
+        });
 
-    toggleSkipButton();
+        // Settings button Click
+        this.settingsButton.addEventListener("click", () => {
+            this.openSettings();
+        });
+        
+        // Close settings Click
+        this.settingsModal.querySelector(".modal-close").addEventListener("click", () => {
+            this.closeSettings();
+        });
+        
+        // Save settings Click
+        this.saveSettingsButton.addEventListener("click", () => {
+            this.saveSettings();
+        });
 
-    // Start the timer
-    if (isPaused) {
-        timer = setInterval(function () {
-            // Timer ends
-            if (remainingTime <= 0) {
-                clearInterval(timer)
-                timer = null
-                handleTimerEnd()
-            } else {
-                remainingTime--
-                displayTime.innerText = calculateTime(remainingTime)
-            }
-            updateProgressBar();
-        }, 1000)
+        // Stats button Click
+        this.statsButton.addEventListener("click", () => {
+            alert("To be implemented...");
+        });
+        
+        this.profileButton.addEventListener("click", () => {
+            alert("To be implemented...");
+        });
+    },
 
-        isPaused = false
-    }
-    // Pause the timer
-    else {
-        clearInterval(timer)
-        timer = null
-        isPaused = true
-    }
-})
+    // === Functions ===
+    calculateTime: function (timeInSeconds) {
+        const m = Math.floor(timeInSeconds / 60);
+        const s = timeInSeconds % 60;
+        return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    },
 
-// Timer buttons on click events
-timerButtons.forEach(function (button) {
-    button.addEventListener("click", function () {
-        // Reset buttons
-        timerButtons.forEach((btn) => {
-            btn.classList.remove("active-button")
-            btn.removeAttribute("disabled")
-        })
-        // Set active button
-        button.classList.add("active-button")
-        button.setAttribute("disabled", true)
+    resetTimer: function () {
+        this.isPaused = true;
+        clearInterval(this.timer);
+        this.timer = null;
+        this.startButtonText.innerText = "Start";
 
-        // Get the button text
-        buttonText = button.textContent.trim();
-        timerButtonActive = buttonText;
+        if (this.timerButtonActive === "Pomodoro")
+            this.configuredTime = this.pomodoroTime;
+        else if (this.timerButtonActive === "Short Break")
+            this.configuredTime = this.shortBreakTime;
+        else if (this.timerButtonActive === "Long Break")
+            this.configuredTime = this.longBreakTime;
 
-        resetTimer()
-    })
-})
+        this.remainingTime = this.configuredTime;
+        this.displayTime.innerText = this.calculateTime(this.remainingTime);
+        this.toggleSkipButton();
+        this.updateProgressBar();
+        this.updateSessionMessage();
+    },
 
-// Timer end logic
-function handleTimerEnd() {
-    // Check after timer ends if pomodoro
-    if (timerButtonActive === "Pomodoro") {
-        pomodoroCount++
-        // Take long break
-        if (pomodoroCount % longBreakInterval === 0) {
-            configuredTime = longBreakTime
-            timerButtonActive = "Long Break"
-            alert("Good job! Time for a long break.")
+    toggleTimer: function () {
+        this.startButtonText.innerText = this.startButtonText.innerText === "Start" ? "Pause" : "Start";
+
+        this.toggleSkipButton();
+        // Start the timer if its paused.
+        if (this.isPaused) {
+            this.timer = setInterval(() => {
+                if (this.remainingTime <= 0) {
+                    clearInterval(this.timer);
+                    this.timer = null;
+                    this.handleTimerEnd()
+                }
+                else {
+                    this.remainingTime--;
+                    this.displayTime.innerText = this.calculateTime(this.remainingTime);
+                }
+                this.updateProgressBar();
+            }, 1000);
+            this.isPaused = false
         }
-        // Take short break
+        // Stop the timer if its running.
         else {
-            configuredTime = shortBreakTime;
-            timerButtonActive = "Short Break";
-            alert("Good job! Time for a short break.");
+            clearInterval(this.timer);
+            this.timer = null;
+            this.isPaused = true;
         }
-    }
-    // After the breaks, reset to pomodoro time
-    else {
-        configuredTime = pomodoroTime;
-        timerButtonActive = "Pomodoro";
-        alert("Break over! Time to focus.");
-        // Only increment session if pomodoro timer is used
-        if (pomodoroCount >= sessionCount)
-            sessionCount++;
-    }
-    resetTimer()
-    // Update buttons and UI
-    timerButtons.forEach((btn) => {
-        btn.classList.remove("active-button");
-        btn.removeAttribute("disabled")
-        if (btn.textContent.trim() === timerButtonActive) {
-            btn.classList.add("active-button");
-            btn.setAttribute("disabled", true);
+    },
+
+    changeTimerMode: function (button) {
+        this.timerButtonActive = button.textContent.trim();
+        this.updateTimerButtonStates();
+        this.resetTimer()
+    },
+
+    updateTimerButtonStates: function () {
+        this.timerButtons.forEach((btn) => {
+            btn.classList.remove("active-button");
+            btn.removeAttribute("disabled");
+            if (btn.textContent.trim() === this.timerButtonActive) {
+                btn.classList.add("active-button");
+                btn.setAttribute("disabled", true);
+            }
+        });
+    },
+
+    handleTimerEnd: function () {
+        this.alarmSound.play();
+
+        if (this.timerButtonActive === "Pomodoro") {
+            this.pomodoroCount++;
+            if (this.pomodoroCount % this.longBreakInterval === 0) {
+                this.timerButtonActive = "Long Break";
+                alert("Good job! Time for a long break.");
+            }
+            else {
+                this.timerButtonActive = "Short Break";
+                alert("Good job! Take a short break.");
+            }
         }
-    })
+        else {
+            this.timerButtonActive = "Pomodoro";
+            alert("Break over! Time to focus.");
+            if (this.pomodoroCount >= this.sessionCount)
+                this.sessionCount++;
+        }
+
+        this.updateTimerButtonStates();
+        this.resetTimer();
+    },
+
+    toggleSkipButton: function () {
+        if (this.startButtonText.innerText.trim() === "Start") {
+            this.skipButton.classList.remove("opacity-100");
+            this.skipButton.classList.add("opacity-0");
+            this.skipButton.classList.remove("cursor-pointer");
+            this.skipButton.setAttribute("disabled", true);
+        }
+        else {
+            this.skipButton.classList.remove("opacity-0");
+            this.skipButton.classList.add("opacity-100");
+            this.skipButton.classList.add("cursor-pointer");
+            this.skipButton.removeAttribute("disabled");
+        }
+    },
+
+    updateSessionMessage: function () {
+        if (this.timerButtonActive === "Pomodoro")
+            this.sessionMessage = "Time to Focus!"
+        else if (this.timerButtonActive === "Short Break")
+            this.sessionMessage = "Take a break!"
+        else if (this.timerButtonActive === "Long Break")
+            this.sessionMessage = "Take a long break!"
+
+        this.displayPomodoroCount.innerText = `#${this.sessionCount} - ${this.sessionMessage}`;
+    },
+
+    updateProgressBar: function () {
+        const percent = (this.remainingTime / this.configuredTime) * 100;
+        this.progressBar.style.width = (100 - percent) + "%";
+    },
+
+    closeSettings: function () {
+        this.settingsModal.classList.remove("flex");
+        this.settingsModal.classList.add("hidden");
+    },
+    
+    openSettings: function () {
+        this.settingsModal.classList.remove("hidden");
+        this.settingsModal.classList.add("flex");
+    },
+
+    // To be replaced by loadSettingsFromStorage()
+    setTimerPresets: function () {
+        this.pomodoroTime = parseInt(this.settingsForm.querySelector("#pomodoro").value * 60);
+        this.shortBreakTime = parseInt(this.settingsForm.querySelector("#short-break").value * 60);
+        this.longBreakTime = parseInt(this.settingsForm.querySelector("#long-break").value * 60);
+        this.longBreakInterval = parseInt(this.settingsForm.querySelector("#long-break-interval").value);
+    },
+    // To be replaced by saveSettingsToStorage()
+    saveSettings: function () {
+        this.setTimerPresets();
+        this.resetTimer();
+        this.closeSettings();
+    },
+
+    // To be used in the future when alert modal is implemented
+    // startAlarm: function () {
+    //     this.alarmSound.play();
+    // },
+    // stopAlarm: function () {
+    //     this.alarmSound.pause();
+    //     this.alarmSound.currentTime = 0;
+    // }
+
 }
 
-// Skip button onclick
-skipButton.addEventListener("click", function () {
-    handleTimerEnd();
-    updateSessionMessage();
-})
-
-// Show or hide skip button
-function toggleSkipButton() {
-    if (startButtonText.innerText === "Start") {
-        skipButton.classList.remove("opacity-100");
-        skipButton.classList.add("opacity-0");
-        skipButton.classList.remove("cursor-pointer");
-        skipButton.setAttribute("disabled", true);
-    } else {
-        skipButton.classList.remove("opacity-0");
-        skipButton.classList.add("opacity-100");
-        skipButton.classList.add("cursor-pointer");
-        skipButton.removeAttribute("disabled");
-    }
-}
-
-function updateSessionMessage() {
-    if (timerButtonActive === "Pomodoro") {
-        sessionMessage = "Time to Focus!"
-    } else if (timerButtonActive === "Short Break") {
-        sessionMessage = "Take a break!";
-    } else if (timerButtonActive === "Long Break") {
-        sessionMessage = "Take a long break!"
-    }
-    displayPomodoroCount.innerText = `#${sessionCount} - ${sessionMessage}`
-}
-
-// Update the progress bar
-function updateProgressBar() {
-    progressBar = document.getElementById('progress-bar');
-    percent = (remainingTime / configuredTime) * 100;
-    progressBar.style.width = (100 - percent) + "%";
-}
-
-// Modal logic
-function closeSettings() {
-    settingsModal.classList.remove('flex');
-    settingsModal.classList.add('hidden');
-}
-
-// Show modal when setting icon is clicked
-settingsButton.addEventListener('click', function() {
-    settingsModal.classList.remove('hidden');
-    settingsModal.classList.add('flex');
-});
-
-// Close modal when close icon is clicked
-settingsModal.querySelector('.modal-close').addEventListener('click', closeSettings);
-
-
-function setTimerPresets() {
-    pomodoroTime = settingsForm.querySelector('#pomodoro').value * 60;
-    shortBreakTime = settingsForm.querySelector('#short-break').value * 60;
-    longBreakTime = settingsForm.querySelector('#long-break').value * 60;
-    longBreakInterval = settingsForm.querySelector('#long-break-interval').value;
-}
-
-// Save settings
-document.getElementById('save-settings-button').addEventListener('click', function () {
-    setTimerPresets()
-    resetTimer()
-    closeSettings()
-});
-
-// Store settings in local storage
-
-
-
-
-document.addEventListener('DOMContentLoaded', main());
+document.addEventListener('DOMContentLoaded', () => PomodoroApp.init());
