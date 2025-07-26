@@ -18,6 +18,11 @@ TODO:
     [] Setup .database
     [] Make login possible
 
+    Bugs:
+        [] Alarm doesnt play until alert() is closed
+            - possible fix, make an alert modal
+            - possible fix, make a system notification
+
     For future:
         Add database.
         Store the stats in database.

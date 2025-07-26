@@ -14,7 +14,6 @@ const PomodoroApp = {
     timerButtonActive: "Pomodoro",
     message: null,
     pomodoroCount: 0,
-    sessionCount: 1,
 
     // === DOM ===
     displayTime: document.getElementById("timer"),
@@ -161,7 +160,8 @@ const PomodoroApp = {
                 if (this.remainingTime <= 0) {
                     clearInterval(this.timer);
                     this.timer = null;
-                    this.handleTimerEnd()
+                    this.startAlarm();
+                    this.handleTimerEnd();
                 }
                 else {
                     this.remainingTime--;
@@ -209,8 +209,6 @@ const PomodoroApp = {
     },
 
     handleTimerEnd: function () {
-        this.startAlarm();
-
         if (this.timerButtonActive === "Pomodoro") {
             this.pomodoroCount++;
             if (this.pomodoroCount % this.longBreakInterval === 0) {
@@ -228,8 +226,6 @@ const PomodoroApp = {
             this.timerButtonActive = "Pomodoro";
             document.title = "Time to focus!";
             alert("Break over! Time to focus.");
-            if (this.pomodoroCount >= this.sessionCount)
-                this.sessionCount++;
         }
 
         this.updateTimerButtonStates();
@@ -259,7 +255,7 @@ const PomodoroApp = {
         else if (this.timerButtonActive === "Long Break")
             this.message = "Take a long break!"
 
-        this.displayPomodoroCount.innerText = `#${this.sessionCount} - ${this.message}`;
+        this.displayPomodoroCount.innerText = `#${this.pomodoroCount + 1} - ${this.message}`;
     },
 
     updateProgressBar: function () {
@@ -362,7 +358,6 @@ const PomodoroApp = {
             "remainingTime": this.remainingTime,
             "timerButtonActive": this.timerButtonActive,
             "pomodoroCount": this.pomodoroCount,
-            "sessionCount": this.sessionCount,
             "isPaused": this.isPaused,
             "lastUpdated": Date.now()
         };
@@ -374,7 +369,6 @@ const PomodoroApp = {
             remainingTime, 
             timerButtonActive, 
             pomodoroCount, 
-            sessionCount,
             isPaused,
             lastUpdated
         } = JSON.parse(session);
@@ -382,7 +376,6 @@ const PomodoroApp = {
         this.remainingTime = remainingTime;
         this.timerButtonActive = timerButtonActive;
         this.pomodoroCount = pomodoroCount;
-        this.sessionCount = sessionCount;
         
         const now = Date.now();
         let adjustedTime = remainingTime;
