@@ -138,6 +138,7 @@ const PomodoroApp = {
         this.toggleSkipButton();
         this.updateProgressBar();
         this.updateMessage();
+        this.updateTitle();
     },
 
     setConfiguredTime: function () {
@@ -152,6 +153,7 @@ const PomodoroApp = {
     toggleTimer: function () {
         this.startButtonText.innerText = this.startButtonText.innerText === "Start" ? "Pause" : "Start";
         this.updateStartButtonState();
+        this.updateTitle();
         this.toggleSkipButton();
         // Start the timer if its paused.
         if (this.isPaused) {
@@ -163,6 +165,7 @@ const PomodoroApp = {
                 }
                 else {
                     this.remainingTime--;
+                    this.updateTitle();
                     this.displayTime.innerText = this.calculateTime(this.remainingTime);
                 }
                 this.updateProgressBar();
@@ -212,15 +215,18 @@ const PomodoroApp = {
             this.pomodoroCount++;
             if (this.pomodoroCount % this.longBreakInterval === 0) {
                 this.timerButtonActive = "Long Break";
+                document.title = "Take a long break!";
                 alert("Good job! Time for a long break.");
             }
             else {
                 this.timerButtonActive = "Short Break";
+                document.title = "Take a break!";
                 alert("Good job! Take a short break.");
             }
         }
         else {
             this.timerButtonActive = "Pomodoro";
+            document.title = "Time to focus!";
             alert("Break over! Time to focus.");
             if (this.pomodoroCount >= this.sessionCount)
                 this.sessionCount++;
@@ -277,6 +283,15 @@ const PomodoroApp = {
         this.setSettings();
         this.resetTimer();
         this.closeSettings();
+    },
+
+    updateTitle: function () {
+        if (this.remainingTime != this.configuredTime) {
+            document.title = `${this.calculateTime(this.remainingTime)} - PomoPals`;
+        }
+        else {
+            document.title = `PomoPals`;
+        }
     },
 
     // Set the setting values
@@ -386,7 +401,9 @@ const PomodoroApp = {
             this.remainingTime = adjustedTime;
             this.displayTime.innerText = this.calculateTime(this.remainingTime);
             this.updateProgressBar();
-            
+            this.updateMessage();
+            this.updateTitle();
+
             // Force stop so that timer does not start
             this.isPaused = true;
             this.startButtonText.innerText = "Start";
