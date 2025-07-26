@@ -12,7 +12,7 @@ const PomodoroApp = {
     timer: null,
     isPaused: true,
     timerButtonActive: "Pomodoro",
-    sessionMessage: null,
+    message: null,
     pomodoroCount: 0,
     sessionCount: 1,
 
@@ -28,7 +28,7 @@ const PomodoroApp = {
     settingsButton: document.getElementById("settings-button"),
     statsButton: document.getElementById("stats-button"),
     profileButton: document.getElementById("profile-button"),
-    saveSettingsButton: document.getElementById("save-settings-button"),
+    resetButton: document.getElementById("reset-button"),
     progressBar: document.getElementById("progress-bar"),
 
     // === Sound ===
@@ -42,6 +42,11 @@ const PomodoroApp = {
         this.resetTimer();
         this.bindEvents();
 
+        const session = sessionStorage.getItem("pomopals-session");
+        if (session) {
+            this.loadSession(session);
+        }
+
         // this.alarmSound.load = true;
     },
 
@@ -53,11 +58,22 @@ const PomodoroApp = {
             this.toggleTimer();
         });
         
+        // Keyboard Shortcuts
+        document.addEventListener("keydown", (e) => {
+            // Space bar
+            if (e.code === "Space" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+                e.preventDefault();
+                this.startButton.click();
+            }
+        });
+
         // Skip Button Click
         this.skipButton.addEventListener("click", () => {
             this.buttonSound.play();
             this.handleTimerEnd();
-            this.updateSessionMessage();
+            this.updateMessage();
+            this.updateStartButtonState();
+            this.saveSession();
         });
 
         // Timer buttons Click
@@ -65,6 +81,7 @@ const PomodoroApp = {
             btn.addEventListener("click", () => {
                 this.changeTimerMode(btn);
                 this.playButtonSound();
+                this.saveSession();
             });
         });
 
@@ -79,8 +96,9 @@ const PomodoroApp = {
             this.settingsForm.reset();
         });
         
-        // Save settings Click
-        this.saveSettingsButton.addEventListener("click", () => {
+        // On submit of settings form
+        this.settingsForm.addEventListener("submit", (e) => {
+            e.preventDefault();
             this.updateSettings();
         });
 
@@ -91,6 +109,11 @@ const PomodoroApp = {
         
         this.profileButton.addEventListener("click", () => {
             alert("To be implemented...");
+        });
+
+        // Reset button Click
+        this.resetButton.addEventListener("click", () => {
+            this.resetSettings();
         });
     },
 
@@ -106,24 +129,29 @@ const PomodoroApp = {
         clearInterval(this.timer);
         this.timer = null;
         this.startButtonText.innerText = "Start";
+        this.updateStartButtonState();
 
-        if (this.timerButtonActive === "Pomodoro")
-            this.configuredTime = this.pomodoroTime;
-        else if (this.timerButtonActive === "Short Break")
-            this.configuredTime = this.shortBreakTime;
-        else if (this.timerButtonActive === "Long Break")
-            this.configuredTime = this.longBreakTime;
+        this.setConfiguredTime();
 
         this.remainingTime = this.configuredTime;
         this.displayTime.innerText = this.calculateTime(this.remainingTime);
         this.toggleSkipButton();
         this.updateProgressBar();
-        this.updateSessionMessage();
+        this.updateMessage();
+    },
+
+    setConfiguredTime: function () {
+        if (this.timerButtonActive === "Pomodoro")
+            this.configuredTime = this.pomodoroTime
+        else if (this.timerButtonActive === "Short Break")
+            this.configuredTime = this.shortBreakTime
+        else if (this.timerButtonActive === "Long Break")
+            this.configuredTime = this.longBreakTime
     },
 
     toggleTimer: function () {
         this.startButtonText.innerText = this.startButtonText.innerText === "Start" ? "Pause" : "Start";
-
+        this.updateStartButtonState();
         this.toggleSkipButton();
         // Start the timer if its paused.
         if (this.isPaused) {
@@ -138,6 +166,7 @@ const PomodoroApp = {
                     this.displayTime.innerText = this.calculateTime(this.remainingTime);
                 }
                 this.updateProgressBar();
+                this.saveSession();
             }, 1000);
             this.isPaused = false
         }
@@ -147,12 +176,13 @@ const PomodoroApp = {
             this.timer = null;
             this.isPaused = true;
         }
+        this.saveSession();
     },
 
     changeTimerMode: function (button) {
         this.timerButtonActive = button.textContent.trim();
         this.updateTimerButtonStates();
-        this.resetTimer()
+        this.resetTimer();
     },
 
     updateTimerButtonStates: function () {
@@ -164,6 +194,15 @@ const PomodoroApp = {
                 btn.setAttribute("disabled", true);
             }
         });
+    },
+
+    updateStartButtonState: function () {
+        if (this.startButtonText.innerText === "Start") {
+            this.startButton.querySelector("span").classList.remove("pressed");
+        }
+        else {
+            this.startButton.querySelector("span").classList.add("pressed");
+        }
     },
 
     handleTimerEnd: function () {
@@ -206,15 +245,15 @@ const PomodoroApp = {
         }
     },
 
-    updateSessionMessage: function () {
+    updateMessage: function () {
         if (this.timerButtonActive === "Pomodoro")
-            this.sessionMessage = "Time to Focus!"
+            this.message = "Time to Focus!"
         else if (this.timerButtonActive === "Short Break")
-            this.sessionMessage = "Take a break!"
+            this.message = "Take a break!"
         else if (this.timerButtonActive === "Long Break")
-            this.sessionMessage = "Take a long break!"
+            this.message = "Take a long break!"
 
-        this.displayPomodoroCount.innerText = `#${this.sessionCount} - ${this.sessionMessage}`;
+        this.displayPomodoroCount.innerText = `#${this.sessionCount} - ${this.message}`;
     },
 
     updateProgressBar: function () {
@@ -251,17 +290,27 @@ const PomodoroApp = {
 
     // Get the values from the form and store in the storage
     saveSettingsToStorage: function () {
-        localStorage.setItem(
-            "pomopals-settings",
-            JSON.stringify({
-                version: 1,
-                pomodoro: this.settingsForm.querySelector("#pomodoro").value,
-                shortBreak: this.settingsForm.querySelector("#short-break").value,
-                longBreak: this.settingsForm.querySelector("#long-break").value,
-                longBreakInterval: this.settingsForm.querySelector("#long-break-interval").value,
-                soundEffects: this.settingsForm.querySelector("#sound-effects").checked
-            })
-        )
+
+        const getValidatedInt = (selector, minValue, fallbackValue) => {
+            const value = parseInt(this.settingsForm.querySelector(selector).value, 10);
+            return Number.isInteger(value) && value >= minValue ? value : fallbackValue;
+        };
+
+        const getValidatedBool = (selector) => {
+            const checkbox = this.settingsForm.querySelector(selector);
+            return checkbox && typeof checkbox.checked === "boolean" ? checkbox.checked : false;
+        };
+
+        const settings = {
+            version: 1,
+            pomodoro: getValidatedInt("#pomodoro", 10, 25),
+            shortBreak: getValidatedInt("#short-break", 1, 5),
+            longBreak: getValidatedInt("#long-break", 5, 15),
+            longBreakInterval: getValidatedInt("#long-break-interval", 4, 4),
+            soundEffects: getValidatedBool("#sound-effects")
+        };
+        
+        localStorage.setItem("pomopals-settings", JSON.stringify(settings));
     },
 
     // Get the settings from the localstorage
@@ -275,6 +324,13 @@ const PomodoroApp = {
             this.settingsForm.querySelector("#long-break").value = longBreak;
             this.settingsForm.querySelector("#long-break-interval").value = longBreakInterval;
             this.settingsForm.querySelector("#sound-effects").checked = soundEffects;
+            
+            // Set the default values
+            this.settingsForm.querySelector("#pomodoro").defaultValue = pomodoro;
+            this.settingsForm.querySelector("#short-break").defaultValue = shortBreak;
+            this.settingsForm.querySelector("#long-break").defaultValue = longBreak;
+            this.settingsForm.querySelector("#long-break-interval").defaultValue = longBreakInterval;
+            this.settingsForm.querySelector("#sound-effects").defaultChecked = soundEffects;
         }
     },
     
@@ -284,9 +340,60 @@ const PomodoroApp = {
         this.settingsForm.querySelector("#long-break").value = 15;
         this.settingsForm.querySelector("#long-break-interval").value = 4;
         this.settingsForm.querySelector("#sound-effects").checked = true;
-        this.setSettings();
     },
 
+    saveSession: function () {
+        const session = {
+            "remainingTime": this.remainingTime,
+            "timerButtonActive": this.timerButtonActive,
+            "pomodoroCount": this.pomodoroCount,
+            "sessionCount": this.sessionCount,
+            "isPaused": this.isPaused,
+            "lastUpdated": Date.now()
+        };
+        sessionStorage.setItem("pomopals-session", JSON.stringify(session));
+    },
+
+    loadSession: function (session) {
+        const {
+            remainingTime, 
+            timerButtonActive, 
+            pomodoroCount, 
+            sessionCount,
+            isPaused,
+            lastUpdated
+        } = JSON.parse(session);
+            
+        this.remainingTime = remainingTime;
+        this.timerButtonActive = timerButtonActive;
+        this.pomodoroCount = pomodoroCount;
+        this.sessionCount = sessionCount;
+        
+        const now = Date.now();
+        let adjustedTime = remainingTime;
+
+        if (!isPaused && lastUpdated) {
+            const elapsed = Math.floor((now - lastUpdated) / 1000);
+            adjustedTime = remainingTime - elapsed;
+        }
+
+        // Check if time has ran out after reload
+        if (adjustedTime <= 0) {
+            this.handleTimerEnd();
+        }
+        else {
+            this.setConfiguredTime();
+            this.remainingTime = adjustedTime;
+            this.displayTime.innerText = this.calculateTime(this.remainingTime);
+            this.updateProgressBar();
+            
+            // Force stop so that timer does not start
+            this.isPaused = true;
+            this.startButtonText.innerText = "Start";
+            this.updateTimerButtonStates();
+        }
+
+    },
 
     // To be used/improved in the future when alert modal is implemented
     startAlarm: function () {

@@ -8,12 +8,20 @@
     flask run
 
 TODO:
+    [] Add Timer to Tab Title
 
-    1. saveSettingsToStorage()
-    2. loadSettingsFromStorage()
+    [] Profile sidebar design
+        username
+        logout
+        changepassword?
 
+    [] Setup .database
+    [] Make login possible
 
     For future:
         Add database.
         Store the stats in database.
         Add timer end modal. - make alarm sound loop or after a certain time.
+
+    For consideration:
+        Timer is active even when tab is not. (Implemented)

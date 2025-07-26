@@ -143,6 +143,10 @@
     @apply translate-none bg-accent-700 cursor-default;
 }
 
+.pressed {
+    @apply translate-none bg-accent-700;
+}
+
 /* CLose button for modals */
 .modal-close {
     @apply absolute
