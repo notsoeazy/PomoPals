@@ -7,23 +7,66 @@
     npx @tailwindcss/cli -i ./static/src/input.css -o ./static/dist/output.css --watch
     flask run
 
+
+Original Plan: Make a flask app.
+
+Current Plan: Make a static website that will run on github pages.
+In consideration for the stats and profile. It will be stored on localStorage.
+
+====================================
+
+localStorage overview:
+
+pomopals-settings: {
+    version: 
+    pomodoro: 
+    shortBreak: 
+    longBreak: 
+    longBreakInterval: 
+    soundEf
+    fects:
+}
+
+pomopals-stats: {
+    username:
+    totalPomodoros:
+    totalFocusMinutes:
+    totalBreakMinutes:
+    sessionsCompleted: [
+        {
+            date:
+            pomodoros:
+            focusMinutes:
+        }
+    ]
+    dailyStreak:
+    lastActiveDate:
+    longestStreak:
+    firstUsedDate:
+}
+
+====================================
+
 TODO:
-    [] Add Timer to Tab Title
-
     [] Profile sidebar design
-        username
-        logout
-        changepassword?
+    [] Profile close and open logic
 
-    [] Setup .database
-    [] Make login possible
 
     Bugs:
         [] Alarm doesnt play until alert() is closed
             - possible fix, make an alert modal
             - possible fix, make a system notification
 
+    Fix:
+        [] Fix the timer width, should be 90% of the screen.
+
+
+    # Maybe when no longer using github pages
     For future:
+        Make login possible
+        username
+        logout
+        changepassword
         Add database.
         Store the stats in database.
         Add timer end modal. - make alarm sound loop or after a certain time.

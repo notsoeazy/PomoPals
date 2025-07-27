@@ -14,6 +14,8 @@ const PomodoroApp = {
     timerButtonActive: "Pomodoro",
     message: null,
     pomodoroCount: 0,
+    isSkipped: false,
+    username: "",
 
     // === DOM ===
     displayTime: document.getElementById("timer"),
@@ -29,6 +31,12 @@ const PomodoroApp = {
     profileButton: document.getElementById("profile-button"),
     resetButton: document.getElementById("reset-button"),
     progressBar: document.getElementById("progress-bar"),
+    overlay: document.getElementById("overlay"),
+
+    profileSidebar: document.getElementById("profile-sidebar"),
+    editButton: document.getElementById("edit-button"),
+    saveButton: document.getElementById("save-button"),
+    usernameDisplay: document.getElementById("usernameDisplay"),
 
     // === Sound ===
     buttonSound: new Audio("/static/sounds/button.mp3"),
@@ -56,7 +64,6 @@ const PomodoroApp = {
             this.playButtonSound();
             this.toggleTimer();
         });
-        
         // Keyboard Shortcuts
         document.addEventListener("keydown", (e) => {
             // Space bar
@@ -65,16 +72,15 @@ const PomodoroApp = {
                 this.startButton.click();
             }
         });
-
         // Skip Button Click
         this.skipButton.addEventListener("click", () => {
+            this.isSkipped = true;
             this.buttonSound.play();
             this.handleTimerEnd();
             this.updateMessage();
             this.updateStartButtonState();
             this.saveSession();
         });
-
         // Timer buttons Click
         this.timerButtons.forEach(btn => {
             btn.addEventListener("click", () => {
@@ -84,35 +90,67 @@ const PomodoroApp = {
             });
         });
 
+
         // Settings button Click
         this.settingsButton.addEventListener("click", () => {
             this.openSettings();
+            this.showOverlay();
         });
-        
-        // Close settings Click
-        this.settingsModal.querySelector(".modal-close").addEventListener("click", () => {
+        // Overlay clicks
+        this.overlay.addEventListener("click", () => {
             this.closeSettings();
             this.settingsForm.reset();
+            this.hideOverlay();
         });
-        
+        // Close settings Click
+        this.settingsModal.querySelector("#settings-modal-close").addEventListener("click", () => {
+            this.closeSettings();
+            this.hideOverlay();
+            this.settingsForm.reset();
+        });
         // On submit of settings form
         this.settingsForm.addEventListener("submit", (e) => {
             e.preventDefault();
             this.updateSettings();
+            this.closeSettings();
+            this.hideOverlay();
         });
+        // Reset button Click
+        this.resetButton.addEventListener("click", () => {
+            this.resetSettings();
+        });
+
 
         // Stats button Click
         this.statsButton.addEventListener("click", () => {
             alert("To be implemented...");
         });
-        
+
+
+        // Profile button Click
         this.profileButton.addEventListener("click", () => {
-            alert("To be implemented...");
+            modalManager.openModal("profile-sidebar");
         });
 
-        // Reset button Click
-        this.resetButton.addEventListener("click", () => {
-            this.resetSettings();
+
+        // Edit button username Click
+        this.editButton.addEventListener("click", () => {
+            this.usernameDisplay.removeAttribute("readonly");
+            this.usernameDisplay.removeAttribute("disabled");
+            this.usernameDisplay.focus();
+            this.usernameDisplay.select();
+            this.editButton.classList.add("hidden");
+            this.saveButton.classList.remove("hidden");
+        });
+        // Save button username Click
+        this.saveButton.addEventListener("click", () => {
+            this.usernameDisplay.setAttribute("readonly", true);
+            this.usernameDisplay.setAttribute("disabled", true);
+            this.usernameDisplay.blur();
+            this.editButton.classList.remove("hidden");
+            this.saveButton.classList.add("hidden");
+            this.username = this.usernameDisplay.value;
+            statsManager.updateUsername(this.usernameDisplay.value);
         });
     },
 
@@ -210,28 +248,71 @@ const PomodoroApp = {
 
     handleTimerEnd: function () {
         if (this.timerButtonActive === "Pomodoro") {
-            this.pomodoroCount++;
-            if (this.pomodoroCount % this.longBreakInterval === 0) {
+            // Only counts as a pomodoro if atleast 60% completed
+            if ((this.pomodoroTime - this.remainingTime) >= this.pomodoroTime * 0.60)
+                this.pomodoroCount++;
+
+            // Change to long break
+            if (this.pomodoroCount % this.longBreakInterval === 0 && this.pomodoroCount != 0) {
                 this.timerButtonActive = "Long Break";
                 document.title = "Take a long break!";
                 alert("Good job! Time for a long break.");
             }
+            // Change to short break
             else {
                 this.timerButtonActive = "Short Break";
                 document.title = "Take a break!";
                 alert("Good job! Take a short break.");
             }
+
+            // Record stats
+            let pomodoroFullTime = this.pomodoroTime / 60;
+            let pomodoroTimeMinutes = this.isSkipped 
+                ? (this.pomodoroTime - this.remainingTime) / 60 
+                : this.pomodoroTime / 60;
+
+            statsManager.recordPomodoro(
+                pomodoroFullTime,
+                pomodoroTimeMinutes,
+                0,
+                0
+            );
+            
         }
+        // Change to pomodoro
         else {
+            // Record stats
+            let breakMinutes = 0;
+            let longBreakMinutes = 0;
+
+            if (this.timerButtonActive === "Short Break") {
+                breakMinutes = this.isSkipped
+                    ? (this.shortBreakTime - this.remainingTime) / 60
+                    : this.shortBreakTime / 60;
+                }
+            else {
+                longBreakMinutes = this.isSkipped
+                    ? (this.longBreakTime - this.remainingTime) / 60
+                    : this.longBreakTime / 60;
+            }
+
+            statsManager.recordPomodoro(
+                0,
+                0,
+                breakMinutes,
+                longBreakMinutes
+            )
+
             this.timerButtonActive = "Pomodoro";
             document.title = "Time to focus!";
             alert("Break over! Time to focus.");
         }
-
+        
+        this.isSkipped = false;
         this.updateTimerButtonStates();
         this.resetTimer();
     },
-
+    
     toggleSkipButton: function () {
         if (this.startButtonText.innerText.trim() === "Start") {
             this.skipButton.classList.remove("opacity-100");
@@ -278,8 +359,15 @@ const PomodoroApp = {
         this.loadSettingsFromStorage();
         this.setSettings();
         this.resetTimer();
-        this.closeSettings();
     },
+
+    hideOverlay: function () {
+        this.overlay.classList.add("hidden");
+     },
+
+    showOverlay: function () {
+        this.overlay.classList.remove("hidden");
+     },
 
     updateTitle: function () {
         if (this.remainingTime != this.configuredTime) {
@@ -311,12 +399,12 @@ const PomodoroApp = {
             const checkbox = this.settingsForm.querySelector(selector);
             return checkbox && typeof checkbox.checked === "boolean" ? checkbox.checked : false;
         };
-
+        // REMINDER: Removed min for testing
         const settings = {
             version: 1,
-            pomodoro: getValidatedInt("#pomodoro", 10, 25),
+            pomodoro: getValidatedInt("#pomodoro", 1, 25),
             shortBreak: getValidatedInt("#short-break", 1, 5),
-            longBreak: getValidatedInt("#long-break", 5, 15),
+            longBreak: getValidatedInt("#long-break", 1, 15),
             longBreakInterval: getValidatedInt("#long-break-interval", 4, 4),
             soundEffects: getValidatedBool("#sound-effects")
         };
@@ -419,6 +507,117 @@ const PomodoroApp = {
     //     this.alarmSound.currentTime = 0;
     // }
 
-}
+};
+
+ const statsManager = {
+    getStats: function () {
+        const stats = localStorage.getItem("pomopals-stats");
+
+        // If there is a record return it, else return default.
+        if (stats) {
+            return JSON.parse(stats);
+        }
+        else {
+            const today = getToday();
+            return { 
+                username: "Guest", 
+                totalPomodoros: 0,
+                totalFocusMinutes: 0,
+                totalBreakMinutes: 0, 
+                sessionsCompleted: [], 
+                dailyStreak: 0, 
+                lastActiveDate: null, 
+                longestStreak: 0, 
+                firstUsedDate: today
+            };
+        }
+    },
+
+    saveStats: function(stats) {
+        localStorage.setItem("pomopals-stats", JSON.stringify(stats));
+    },
+
+    recordPomodoro: function(pomodoroFullTime = 25, pomodoroTimeMinutes = 25, breakTimeMinutes = 5, longBreakTimeMinutes = 15) {
+        const stats = this.getStats();
+        const today = getToday();
+
+        if (
+            pomodoroTimeMinutes >= (pomodoroFullTime * 0.60)
+            && pomodoroFullTime > 0
+            && pomodoroTimeMinutes > 0
+        ) {
+            stats.totalPomodoros += 1;
+        }
+        
+        stats.totalFocusMinutes += pomodoroFullTime;
+        stats.totalBreakMinutes += (breakTimeMinutes + longBreakTimeMinutes);
+        
+        // Update today's session or create a new one.
+        let session = stats.sessionsCompleted.find(s => s.date === today);
+        if(session) {
+            // Only count when finished 60% of configured time.
+            if (
+                pomodoroTimeMinutes >= (pomodoroFullTime * 0.60)
+                && pomodoroFullTime > 0
+                && pomodoroTimeMinutes > 0
+            ) {
+                session.pomodoros += 1;
+            }
+
+            session.focusMinutes += pomodoroTimeMinutes;
+            session.breakMinutes += (breakTimeMinutes + longBreakTimeMinutes);
+        }
+        else {
+            stats.sessionsCompleted.push({
+                date: today,
+                pomodoros: pomodoroTimeMinutes >= (pomodoroFullTime * 0.60) ? 1 : 0,
+                focusMinutes: pomodoroTimeMinutes,
+                breakMinutes: breakTimeMinutes + longBreakTimeMinutes
+            });
+        }
+
+        // Update streak
+        this.updateStreak(stats, today);
+
+        stats.lastActiveDate = today;
+        this.saveStats(stats);
+    },
+
+    updateStreak: function (stats, today) {
+        // Convert the today to timestamp and then subtract a whole day.
+        const yesterday = new Date(new Date(today).getTime() - 86400000).toISOString().slice(0, 10);
+
+        // Already updated.
+        if (stats.lastActiveDate === today) {
+            return;
+        }
+
+        // Updates the daily streak or reset it.
+        if (stats.lastActiveDate === yesterday) {
+            stats.dailyStreak += 1;
+        }
+        else {
+            stats.dailyStreak = 1;
+        }
+
+        // Update the longest streak if needed.
+        if (stats.dailyStreak > stats.longestStreak) {
+            stats.longestStreak = stats.dailyStreak;
+        }
+    },
+
+    updateUsername(newName) {
+        const stats = this.getStats();
+        stats.username = newName;
+        this.saveStats(stats);
+    }
+
+
+ };
+
+ function getToday() {
+    // Returns date in this format YYYY-MM-DD
+    return new Date().toISOString().slice(0, 10);
+ };
 
 document.addEventListener('DOMContentLoaded', () => PomodoroApp.init());

@@ -72,7 +72,8 @@
 
 /* Nav Buttons */
 .nav-button {
-    @apply font-jersey25 
+    @apply 
+    font-jersey25 
     text-accent-300 
     text-[20px]
 
@@ -89,25 +90,26 @@
     sm:py-0.5
 
     hover:bg-accent-300
-    hover:text-background-50
     active:bg-accent-600
-    transition
+    
+    transition-all
     duration-150
     cursor-pointer;
 }
 
 .nav-button > span {
-    @apply ms-2
+    @apply 
+    ms-2
     hidden
     sm:block
-    select-none;
+    select-none
+    group-hover:text-background-50;
 }
-.nav-button:hover > svg {
-    @apply fill-background-50;
-}
+
 .nav-button > svg {
-    @apply fill-accent-300
-    
+    @apply 
+    fill-accent-300
+    group-hover:fill-background-50
     transition
     duration-150
     ease-in;
@@ -118,7 +120,8 @@
     @apply bg-accent-700 rounded-md p-0 cursor-pointer;
 }
 .timer-button > span {
-    @apply text-sm
+    @apply 
+    text-sm
     sm:text-base
   
     block
@@ -134,7 +137,7 @@
 
     select-none
 
-    transition-transform;
+    transition-all duration-300 ease-in-out;
 }
 .timer-button:active > span {
     @apply translate-none;
