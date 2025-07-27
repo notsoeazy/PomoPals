@@ -202,8 +202,8 @@ const PomodoroApp = {
     // ==============================
     // SOUND
     // ==============================
-    buttonSound: new Audio("./static/sounds/button.mp3"),
-    alarmSound: new Audio("./static/sounds/alarm.mp3"),
+    buttonSound: new Audio("../static/sounds/button.mp3"),
+    alarmSound: new Audio("../static/sounds/alarm.mp3"),
     
     playButtonSound: function () {
         if (this.soundEffects) this.buttonSound.play();
