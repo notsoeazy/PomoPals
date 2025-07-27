@@ -142,10 +142,9 @@
 .timer-button:active > span {
     @apply translate-none;
 }
-.active-button > span {
-    @apply translate-none bg-accent-700 cursor-default;
+.timer-button.pressed > span {
+    @apply translate-none bg-accent-700;
 }
-
 .pressed {
     @apply translate-none bg-accent-700;
 }
