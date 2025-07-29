@@ -59,6 +59,7 @@ TODO:
 
     Fix:
         [] Fix the timer width, should be 90% of the screen.
+        [] Edit adn save buttons for profile is too small for mobile
 
 
     # Maybe when no longer using github pages
