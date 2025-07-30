@@ -226,7 +226,9 @@ const PomodoroApp = {
                 if (this.remainingTime <= 0) {
                     clearInterval(this.timer);
                     this.startAlarm();
-                    this.handleTimerEnd();
+                    setTimeout(() => {
+                        this.handleTimerEnd();
+                    }, 5000);
                 }
                 else {
                     this.remainingTime--;
