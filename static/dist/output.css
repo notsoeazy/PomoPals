@@ -48,6 +48,7 @@
     --color-secondary-50: hsl(215, 100%, 95%);
     --color-secondary-300: hsl(215, 100%, 70%);
     --color-secondary-500: hsl(215, 100%, 50%);
+    --color-accent-50: hsl(0, 100%, 95%);
     --color-accent-300: hsl(0, 100%, 70%);
     --color-accent-500: hsl(0, 100%, 50%);
     --color-accent-600: hsl(0, 100%, 40%);
@@ -380,11 +381,17 @@
     --tw-translate-y: calc(calc(1/2 * 100%) * -1);
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
+  .transform {
+    transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
+  }
   .cursor-pointer {
     cursor: pointer;
   }
   .flex-col {
     flex-direction: column;
+  }
+  .flex-wrap {
+    flex-wrap: wrap;
   }
   .items-center {
     align-items: center;
@@ -1026,6 +1033,48 @@
     }
   }
 }
+.stat-cards {
+  position: relative;
+  max-width: calc(var(--spacing) * 32);
+  min-width: calc(var(--spacing) * 25);
+  flex: 1;
+  border-radius: var(--radius-md);
+  background-color: var(--color-accent-50);
+  padding: calc(var(--spacing) * 2);
+  text-align: end;
+  color: var(--color-accent-300);
+  @media (width >= 40rem) {
+    min-width: calc(var(--spacing) * 28);
+  }
+}
+.stat-cards > svg {
+  position: absolute;
+  top: calc(var(--spacing) * 3);
+  left: calc(var(--spacing) * 2);
+  fill: var(--color-accent-300);
+}
+.stat-cards > span.counter {
+  text-align: end;
+  font-size: var(--text-2xl);
+  line-height: var(--tw-leading, var(--text-2xl--line-height));
+  color: var(--color-accent-600);
+  @media (width >= 40rem) {
+    font-size: var(--text-3xl);
+    line-height: var(--tw-leading, var(--text-3xl--line-height));
+  }
+}
+.stat-cards > p {
+  font-size: var(--text-sm);
+  line-height: var(--tw-leading, var(--text-sm--line-height));
+  @media (width >= 40rem) {
+    font-size: var(--text-base);
+    line-height: var(--tw-leading, var(--text-base--line-height));
+  }
+}
+#filled-icons {
+  fill: none;
+  stroke: var(--color-accent-300);
+}
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
@@ -1040,6 +1089,26 @@
   syntax: "*";
   inherits: false;
   initial-value: 0;
+}
+@property --tw-rotate-x {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-rotate-y {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-rotate-z {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-skew-x {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-skew-y {
+  syntax: "*";
+  inherits: false;
 }
 @property --tw-border-style {
   syntax: "*";
@@ -1223,6 +1292,11 @@
       --tw-translate-x: 0;
       --tw-translate-y: 0;
       --tw-translate-z: 0;
+      --tw-rotate-x: initial;
+      --tw-rotate-y: initial;
+      --tw-rotate-z: initial;
+      --tw-skew-x: initial;
+      --tw-skew-y: initial;
       --tw-border-style: solid;
       --tw-leading: initial;
       --tw-shadow: 0 0 #0000;

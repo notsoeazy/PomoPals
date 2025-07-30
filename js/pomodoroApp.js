@@ -37,6 +37,8 @@ const PomodoroApp = {
     pomodoroCount: 0,
 
     isProfileVisible: false,
+    isSettingsVisible: false,
+    isStatsVisible: false,
 
     timerButtonActive: POMODORO,
     message: null,
@@ -56,9 +58,13 @@ const PomodoroApp = {
     progressBar: document.getElementById("progress-bar"),
 
     overlay: document.getElementById("overlay"),
+
+    statsButton: document.getElementById("stats-button"),
+    statsModal: document.getElementById("stats-modal"),
+
+    settingsButton: document.getElementById("settings-button"),
     settingsModal: document.getElementById("settings-modal"),
     settingsForm: document.getElementById("timer-settings"),
-    settingsButton: document.getElementById("settings-button"),
     resetButton: document.getElementById("reset-button"),
     editButton: document.getElementById("edit-button"),
     saveButton: document.getElementById("save-button"),
@@ -127,10 +133,28 @@ const PomodoroApp = {
 
         // Overlay
         this.overlay.addEventListener("click", () => {
-            this.closeSettings();
-            this.settingsForm.reset();
+            if (this.isStatsVisible) 
+            {
+                this.closeStats();
+            }
+            else if (this.isSettingsVisible) {
+                this.closeSettings();
+                this.settingsForm.reset();
+            }
             this.hideOverlay();
         });
+
+        // Stats button
+        this.statsButton.addEventListener("click", () => {
+            this.openStats();
+            this.showOverlay();
+        });
+        // Stats close
+        this.statsModal.querySelector("#stats-modal-close").addEventListener("click", () => {
+            this.closeStats();
+            this.hideOverlay();
+        });
+
         // Settings button
         this.settingsButton.addEventListener("click", () => {
             this.openSettings();
@@ -549,14 +573,28 @@ const PomodoroApp = {
         this.overlay.classList.remove("hidden");
     },
 
+    openStats: function () {
+        this.statsModal.classList.remove("hidden");
+        this.statsModal.classList.add("flex");
+        this.isStatsVisible = true;
+    },
+    
+    closeStats: function () {
+        this.statsModal.classList.remove("flex");
+        this.statsModal.classList.add("hidden");
+        this.isStatsVisible = false;
+    },
+    
     openSettings: function () {
         this.settingsModal.classList.remove("hidden");
         this.settingsModal.classList.add("flex");
+        this.isSettingsVisible = true;
     },
-
+    
     closeSettings: function () {
         this.settingsModal.classList.remove("flex");
         this.settingsModal.classList.add("hidden");
+        this.isSettingsVisible = false;
     },
 };
 

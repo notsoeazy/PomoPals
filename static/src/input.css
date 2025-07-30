@@ -192,3 +192,23 @@
   after:duration-150 
   after:ease-linear
 }
+
+.stat-cards {
+    @apply rounded-md bg-accent-50 text-accent-300 text-end p-2 relative min-w-25 sm:min-w-28 flex-1 max-w-32
+}
+
+.stat-cards > svg {
+    @apply absolute top-3 left-2 fill-accent-300
+}
+
+.stat-cards > span.counter {
+    @apply text-end text-2xl sm:text-3xl text-accent-600
+}
+
+.stat-cards > p {
+    @apply text-sm sm:text-base
+}
+
+#filled-icons {
+    @apply fill-none stroke-accent-300
+}
