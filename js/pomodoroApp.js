@@ -75,6 +75,12 @@ const PomodoroApp = {
     saveButton: document.getElementById("save-button"),
     usernameDisplay: document.getElementById("usernameDisplay"),
 
+    statsTotalPomodoro: document.getElementById("stats-total-pomodoro").querySelector(".counter"),
+    statsFocusedHours: document.getElementById("stats-focused-hours").querySelector(".counter"),
+    statsBreakHours: document.getElementById("stats-break-hours").querySelector(".counter"),
+    statsDaysAccessed: document.getElementById("stats-days-accessed").querySelector(".counter"),
+    statsDayStreak: document.getElementById("stats-day-streak").querySelector(".counter"),
+
     // ==============================
     // INITIALIZE
     // ==============================
@@ -576,6 +582,7 @@ const PomodoroApp = {
     openStats: function () {
         this.statsModal.classList.remove("hidden");
         this.statsModal.classList.add("flex");
+        this.showStats();
         this.isStatsVisible = true;
     },
     
@@ -583,6 +590,16 @@ const PomodoroApp = {
         this.statsModal.classList.remove("flex");
         this.statsModal.classList.add("hidden");
         this.isStatsVisible = false;
+    },
+
+    showStats: function () {
+        const stats = statsManager.getStats() || 0;
+        this.statsTotalPomodoro.innerText = stats.totalPomodoros || 0;
+        this.statsFocusedHours.innerText = parseFloat(stats.totalFocusMinutes / 60).toFixed(2) || 0;
+        this.statsBreakHours.innerText = parseFloat(stats.totalBreakMinutes / 60).toFixed(2) || 0;
+        this.statsDayStreak.innerText = stats.longestStreak || 0;
+
+        this.statsDaysAccessed.innerText = stats.sessionsCompleted.length || 0;
     },
     
     openSettings: function () {
