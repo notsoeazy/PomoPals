@@ -1,5 +1,5 @@
 # When Starting:
-    source venv/bin/activate - enter virtual environment
+    source .venv/bin/activate - enter virtual environment
     deactivate - leave virtual environment
 
 # To run:
@@ -23,8 +23,7 @@ pomopals-settings: {
     shortBreak: 
     longBreak: 
     longBreakInterval: 
-    soundEf
-    fects:
+    soundEffects:
 }
 
 pomopals-stats: {
@@ -46,31 +45,3 @@ pomopals-stats: {
 }
 
 ====================================
-
-TODO:
-    [] Profile sidebar design
-    [] Profile close and open logic
-
-
-    Bugs:
-        [] Alarm doesnt play until alert() is closed
-            - possible fix, make an alert modal
-            - possible fix, make a system notification
-
-    Fix:
-        [] Fix the timer width, should be 90% of the screen.
-        [] Edit adn save buttons for profile is too small for mobile
-
-
-    # Maybe when no longer using github pages
-    For future:
-        Make login possible
-        username
-        logout
-        changepassword
-        Add database.
-        Store the stats in database.
-        Add timer end modal. - make alarm sound loop or after a certain time.
-
-    For consideration:
-        Timer is active even when tab is not. (Implemented)

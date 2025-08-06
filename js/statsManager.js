@@ -38,7 +38,7 @@ export const statsManager = {
             stats.totalPomodoros += 1;
         }
 
-        stats.totalFocusMinutes += pomodoroFullTime;
+        stats.totalFocusMinutes += pomodoroTimeMinutes;
         stats.totalBreakMinutes += (breakTimeMinutes + longBreakTimeMinutes);
 
         // Update today's session or create a new one.

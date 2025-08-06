@@ -1,7 +1,7 @@
 # PomoPals
 
-#### Video Demo: `<insert your video link here>`
-#### Live Site: [https://notsoeazy.github.io/PomoPals/](https://notsoeazy.github.io/PomoPals/)
+#### Video Demo: <https://youtu.be/RYbNJJawkwo>
+#### Live Site: <https://notsoeazy.github.io/PomoPals/>
 
 ---
 
